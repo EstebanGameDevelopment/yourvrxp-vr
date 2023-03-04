@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7729972723482523426
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7729972723482523436}
+  - component: {fileID: 7729972723482523439}
+  m_Layer: 0
+  m_Name: AppController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7729972723482523436
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7729972723482523426}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7729972723482523439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7729972723482523426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6603db56869e42a45ae673dc0313fdb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LevelScenes: []
+  LevelPrefab:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  PlayerDesktopAvatarPrefab: {fileID: 2099365540500390660, guid: f5a3a26a19ca3b84986e150fea50d378, type: 3}
+  PlayerVRAvatarPrefab: {fileID: 2127424688154152981, guid: df57dc42e74d2f449bcdf4ef8c0c67bf, type: 3}
+  PlayerHandLeftPrefab: {fileID: 5313814839400837218, guid: 2f558ed50df52404ca15cd126973b44b, type: 3}
+  PlayerHandRightPrefab: {fileID: 2805867803795491185, guid: bba0aac279079ba498351070ff79edff, type: 3}
+  BulletPrefab: {fileID: 4528448796840724237, guid: 9d17f1ee49e12be4da93b1d6b2ac97a1, type: 3}
+  RaycastPositionPrefab: {fileID: 5407198516044697379, guid: 001cd745b5750c24da0e46fd34d7db4a, type: 3}
+  DistanceMenus: {x: 0, y: 0, z: 2.2}
