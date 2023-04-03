@@ -45,6 +45,7 @@ namespace yourvrexperience.VR
         private GameObject _currentController;		
         private LineRenderer _raycastLineLeft;
         private LineRenderer _raycastLineRight;
+		private bool _controllersEnabled = false;
 
 		public Camera Camera
 		{
@@ -95,7 +96,17 @@ namespace yourvrexperience.VR
 		{
 			get { return _uxrAvatar; }
 		}
-		private UxrControllerInput _controllerInput;
+		public bool HandTrackingActive
+		{
+			get { return !_controllersEnabled; }
+		}
+        public Vector3 PositionCollisionRaycasted 
+		{ 
+			get { return Vector3.zero; }
+			set {}
+		}
+
+        private UxrControllerInput _controllerInput;
 
 		private bool _rTriggerButtonDown = false, _lTriggerButtonDown = false, _rGripButtonDown = false, _lGripButtonDown = false, _rPrimaryButtonDown = false, _lPrimaryButtonDown = false, _rSecondaryButtonDown = false, _lSecondaryButtonDown = false;
 		private bool _rTriggerButtonUp = false, _lTriggerButtonUp = false, _rGripButtonUp = false, _lGripButtonUp = false, _rPrimaryButtonUp = false, _lPrimaryButtonUp = false, _rSecondaryButtonUp = false, _lSecondaryButtonUp = false;
@@ -715,6 +726,23 @@ namespace yourvrexperience.VR
 
 			_rThumbstickButtonPrevState = _rThumbstickButtonState;
 			_lThumbstickButtonPrevState = _lThumbstickButtonState;
+
+			if ((_controllerInput.IsControllerEnabled(UxrHandSide.Left) && _controllerInput.IsControllerEnabled(UxrHandSide.Right)))
+			{
+				if (!_controllersEnabled)
+				{
+					_controllersEnabled = true;
+					VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangedHandTrackingState, _controllersEnabled);
+				}
+			}
+			else
+			{
+				if (_controllersEnabled)
+				{
+					_controllersEnabled = false;
+					VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangedHandTrackingState, _controllersEnabled);
+				}				
+			}			
         }
 
 #endif		

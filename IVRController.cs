@@ -16,6 +16,8 @@ namespace yourvrexperience.VR
         GameObject HandRightController { get; }
 		LineRenderer RaycastLineLeft  { get; }
         LineRenderer RaycastLineRight  { get; }
+		Vector3 PositionCollisionRaycasted  { get; set; }
+		bool HandTrackingActive { get; }
 
 		Vector2 GetVector2Joystick(XR_HAND hand);
 		bool GetThumbstickDown(XR_HAND hand);

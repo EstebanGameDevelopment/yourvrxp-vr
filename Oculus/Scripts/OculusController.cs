@@ -49,6 +49,11 @@ namespace yourvrexperience.VR
 		private bool _pinchMantained = false;
 		private bool _palmToFace = false;
 		private XR_HAND _handMantained;
+		private Vector3 _positionCollisionRaycasted;
+		private	Vector3 _originLineLeft;
+		private	Vector3 _targetLineLeft;
+		private	Vector3 _originLineRight;
+		private	Vector3 _targetLineRight;
 
 		private Camera _mainCamera;
 
@@ -170,12 +175,65 @@ namespace yourvrexperience.VR
 				}
              }
         }
+		public Vector3 PositionCollisionRaycasted  
+		{ 
+			get { return _positionCollisionRaycasted; }
+			set { _positionCollisionRaycasted = value; 
 
+				Vector3 positionOriginRay = CurrentController.transform.position;
+				float distanceToCollider = 	Vector3.Distance(_positionCollisionRaycasted, positionOriginRay);
+				if (_handSelected == XR_HAND.right)
+				{
+					float originalDistanceRight = Vector3.Distance(_originLineRight, _targetLineRight);
+					if (originalDistanceRight > distanceToCollider)
+					{
+						_raycastLineRight.SetPosition(1, new Vector3(0, 0, distanceToCollider));
+					}
+					else
+					{
+						_raycastLineRight.SetPosition(1, new Vector3(0, 0, originalDistanceRight));
+					}
+				}
+				else
+				{
+					float originalDistanceLeft = Vector3.Distance(_originLineLeft, _targetLineLeft);
+					if (originalDistanceLeft > distanceToCollider)
+					{
+						_raycastLineLeft.SetPosition(1, new Vector3(0, 0, distanceToCollider));
+					}
+					else
+					{
+						_raycastLineLeft.SetPosition(1, new Vector3(0, 0, originalDistanceLeft));
+					}
+				}
+			}
+		}
 
-		void Start()
+        public bool HandTrackingActive 
+		{
+			get {
+				if (_ovrHandsManager != null)
+				{
+					return _ovrHandsManager.HandsBeingTracked;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+
+        void Start()
         {
             _raycastLineLeft = HandLeftController.GetComponentInChildren<LineRenderer>();
             _raycastLineRight = HandRightController.GetComponentInChildren<LineRenderer>();
+			
+			_originLineLeft = _raycastLineLeft.GetPosition(0);
+			_targetLineLeft = _raycastLineLeft.GetPosition(1);
+			
+			_originLineRight = _raycastLineRight.GetPosition(0);
+			_targetLineRight = _raycastLineRight.GetPosition(1);
+
             DisableRays();
 			SystemEventController.Instance.Event += OnSystemEvent;
 			VRInputController.Instance.Event += OnVREvent;
@@ -285,6 +343,10 @@ namespace yourvrexperience.VR
 			{
 				XR_HAND targetHand = (XR_HAND)parameters[0];
 				VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerIndexTriggered, false, targetHand);
+			}
+			if (nameEvent.Equals(OculusHandsManager.EventOculusHandsManagerStateChanged))
+			{
+				VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangedHandTrackingState, (bool)parameters[0]);
 			}
 		}
 

@@ -3279,8 +3279,8 @@ LineRenderer:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
-        value: 1
+        time: 0.97595215
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -3478,6 +3478,14 @@ MonoBehaviour:
   OpenXRCamera: {fileID: 3394743387085687520}
   OpenXRLeftController: {fileID: 3394743386082379761}
   OpenXRRightController: {fileID: 3394743387652964301}
+  _rThumbstickButtonDown: 0
+  _lThumbstickButtonDown: 0
+  _rThumbstickButtonUp: 0
+  _lThumbstickButtonUp: 0
+  _rThumbstickButtonState: 0
+  _lThumbstickButtonState: 0
+  _rThumbstickButtonPrevState: 0
+  _lThumbstickButtonPrevState: 0
 --- !u!114 &1005246607048137768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3822,7 +3830,7 @@ LineRenderer:
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 1
+        value: 0
         inSlope: 0
         outSlope: 0
         tangentMode: 0

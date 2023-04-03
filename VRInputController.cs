@@ -23,6 +23,7 @@ namespace yourvrexperience.VR
 		public const string EventVRInputControllerAssignCurrentPointer = "EventVRInputControllerAssignCurrentPointer";
 		public const string EventVRInputControllerIndexTriggered = "EventVRInputControllerIndexTriggered";
 		public const string EventVRInputControllerHandTriggered = "EventVRInputControllerHandTriggered";
+		public const string EventVRInputControllerChangedHandTrackingState = "EventVRInputControllerChangedHandTrackingState";
 
 		public const float TimeoutCheckMovement = 0.1f;
 		public const float SensivilityJoysticks = 0.5f;

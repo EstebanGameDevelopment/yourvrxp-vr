@@ -56,7 +56,12 @@ namespace yourvrexperience.VR
 		private Camera _mainCamera;
 		private XRUIInputModule[] _eventSystemOpenXR;
 		private GameObject _interactionManager;
-
+		private Vector3 _positionCollisionRaycasted;
+		private	Vector3 _originLineLeft;
+		private	Vector3 _targetLineLeft;
+		private	Vector3 _originLineRight;
+		private	Vector3 _targetLineRight;
+		
 		public Camera Camera
 		{
 			get { 
@@ -103,10 +108,54 @@ namespace yourvrexperience.VR
             get { return _raycastLineRight; }
         }
 
+        public Vector3 PositionCollisionRaycasted 
+		{ 
+			get { return _positionCollisionRaycasted; }
+			set { _positionCollisionRaycasted = value; 
+
+				Vector3 positionOriginRay = CurrentController.transform.position;
+				float distanceToCollider = 	Vector3.Distance(_positionCollisionRaycasted, positionOriginRay);
+				if (_handSelected == XR_HAND.right)
+				{
+					float originalDistanceRight = Vector3.Distance(_originLineRight, _targetLineRight);
+					if (originalDistanceRight > distanceToCollider)
+					{
+						_raycastLineRight.SetPosition(1, new Vector3(0, 0, distanceToCollider));
+					}
+					else
+					{
+						_raycastLineRight.SetPosition(1, new Vector3(0, 0, originalDistanceRight));
+					}
+				}
+				else
+				{
+					float originalDistanceLeft = Vector3.Distance(_originLineLeft, _targetLineLeft);
+					if (originalDistanceLeft > distanceToCollider)
+					{
+						_raycastLineLeft.SetPosition(1, new Vector3(0, 0, distanceToCollider));
+					}
+					else
+					{
+						_raycastLineLeft.SetPosition(1, new Vector3(0, 0, originalDistanceLeft));
+					}
+				}
+			}
+		}
+        public bool HandTrackingActive 
+		{
+			get { return false; }			
+		}
+
         private void Start()
         {
 			_raycastLineLeft = OpenXRLeftController.GetComponentInChildren<LineRenderer>();
 			_raycastLineRight = OpenXRRightController.GetComponentInChildren<LineRenderer>();
+
+			_originLineLeft = _raycastLineLeft.GetPosition(0);
+			_targetLineLeft = _raycastLineLeft.GetPosition(1);
+			
+			_originLineRight = _raycastLineRight.GetPosition(0);
+			_targetLineRight = _raycastLineRight.GetPosition(1);
 
 			_leftLineVisual = OpenXRLeftController.GetComponentInChildren<XRInteractorLineVisual>();
 			_rightLineVisual = OpenXRRightController.GetComponentInChildren<XRInteractorLineVisual>();
