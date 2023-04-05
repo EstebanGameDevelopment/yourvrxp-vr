@@ -24,7 +24,8 @@ namespace yourvrexperience.VR
 		public const string EventVRInputControllerIndexTriggered = "EventVRInputControllerIndexTriggered";
 		public const string EventVRInputControllerHandTriggered = "EventVRInputControllerHandTriggered";
 		public const string EventVRInputControllerChangedHandTrackingState = "EventVRInputControllerChangedHandTrackingState";
-
+		public const string EventVRInputControllerChangeLocomotion = "EventVRInputControllerChangeLocomotion";
+		
 		public const float TimeoutCheckMovement = 0.1f;
 		public const float SensivilityJoysticks = 0.5f;
 		public const float RadiusVRPlayer = 0.5f;
@@ -489,7 +490,7 @@ namespace yourvrexperience.VR
 			{
 				_enableLocomotion = (bool)parameters[0];
 			}
-			if (nameEvent.Equals(ScreenConfig.EventScreenConfigChangeLocomotion))
+			if (nameEvent.Equals(EventVRInputControllerChangeLocomotion))
 			{
 				if ((bool)parameters[0])
 				{
