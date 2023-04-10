@@ -63,25 +63,25 @@ namespace yourvrexperience.VR
 
 				_visualsContainer.SetActive(false);
 			}
-			SystemEventController.Instance.Event += OnSystemEvent;
 			VRInputController.Instance.Event += OnVREvent;
 #else			
 			_visualsContainer.SetActive(false);
 #endif			
+			SystemEventController.Instance.Event += OnSystemEvent;
 		}
 
 		protected virtual void OnDestroy()
 		{
 #if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR
-			if (SystemEventController.Instance != null)
-			{
-				SystemEventController.Instance.Event -= OnSystemEvent;
-			}
 			if (VRInputController.Instance != null)
 			{
 				VRInputController.Instance.Event -= OnVREvent;
 			}
 #endif						
+			if (SystemEventController.Instance != null)
+			{
+				SystemEventController.Instance.Event -= OnSystemEvent;
+			}
 		}
 
 #if ENABLE_ULTIMATEXR
