@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 6940508903887685443}
   - component: {fileID: 2125758650925654649}
   - component: {fileID: 7196053761859186290}
-  m_Layer: 12
+  m_Layer: 11
   m_Name: Origin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,9 +175,17 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6950250354286207761}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Radius: 3
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8138160861147896939
@@ -275,7 +283,7 @@ GameObject:
   - component: {fileID: 1461005413716266769}
   - component: {fileID: 6976729855002751419}
   - component: {fileID: 1760415128636682059}
-  m_Layer: 12
+  m_Layer: 11
   m_Name: FacePointerDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
