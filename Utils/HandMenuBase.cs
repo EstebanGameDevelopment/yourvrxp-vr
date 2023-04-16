@@ -28,7 +28,7 @@ namespace yourvrexperience.VR
 			backButton.onClick.AddListener(OnBackPressed);
 		}
 
-		private void OnBackPressed()
+		protected virtual void OnBackPressed()
 		{
 			DispatchHandMenuBaseEvent(EventHandMenuBaseBack);
 		}
