@@ -14,6 +14,9 @@ namespace yourvrexperience.VR
 		public GameObject Target;
 		public GameObject Menu;
 
+		public float AngleActivation = 45;
+		public float AngleDeactivation = 85;
+
 		private bool _isColliding = false;
 		private int _layerHand;
 
@@ -28,7 +31,7 @@ namespace yourvrexperience.VR
 			float angleToHead = Vector3.Angle(forward, -VRInputController.Instance.VRController.HeadController.transform.forward);
 			if (!_isColliding)
 			{
-				if (angleToHead < 45)
+				if (angleToHead < AngleActivation)
 				{
 					RaycastHit collisionHandCheck = new RaycastHit();
 					
@@ -43,7 +46,7 @@ namespace yourvrexperience.VR
 			}
 			else
 			{
-				if (angleToHead > 85)
+				if (angleToHead > AngleDeactivation)
 				{
 					_isColliding = false;
 					Origin.SetActive(true);
