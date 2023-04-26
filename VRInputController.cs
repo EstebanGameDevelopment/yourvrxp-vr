@@ -491,7 +491,7 @@ namespace yourvrexperience.VR
 				_enableLocomotion = (bool)parameters[0];
 			}
 			if (nameEvent.Equals(EventVRInputControllerChangeLocomotion))
-			{
+			{				
 				if ((bool)parameters[0])
 				{
 					_locomotionRightHand = (LocomotionMode)parameters[1];

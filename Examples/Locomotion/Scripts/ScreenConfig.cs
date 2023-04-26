@@ -50,7 +50,7 @@ namespace yourvrexperience.VR
 			if ((int)_rightHand > 3) _rightHand = 0;
 			rightHandInfo.text = _rightHand.ToString();
 #if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR					
-			VRInputController.Instance.DispatchVREvent(EventScreenConfigChangeLocomotion, true, _rightHand);
+			VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangeLocomotion, true, _rightHand);
 #endif			
 		}
 
@@ -60,7 +60,7 @@ namespace yourvrexperience.VR
 			if ((int)_leftHand > 3) _leftHand = 0;
 			leftHandInfo.text = _leftHand.ToString();
 #if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR					
-			VRInputController.Instance.DispatchVREvent(EventScreenConfigChangeLocomotion, false, _leftHand);
+			VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangeLocomotion, false, _leftHand);
 #endif			
 		}
 
