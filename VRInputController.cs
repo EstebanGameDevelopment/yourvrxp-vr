@@ -105,7 +105,7 @@ namespace yourvrexperience.VR
 		[Tooltip("Enable the joysticks to move the camera")]
 		[SerializeField] private XR_HAND EnableJoystickMovement = XR_HAND.none;
 		[Tooltip("The speed of movement of the joystick")]
-		[SerializeField] private float SpeedJoystickMovement = 1;
+		[SerializeField] private float speedJoystickMovement = 1;
 
 		[Tooltip("Enable the joysticks to rotate the camera")]
 		[SerializeField] private XR_HAND EnableJoystickRotation = XR_HAND.none;
@@ -152,6 +152,11 @@ namespace yourvrexperience.VR
 		}
 #endif
 
+		public float SpeedJoystickMovement
+		{
+			get { return speedJoystickMovement; }
+			set { speedJoystickMovement = value; }
+		}
         public override bool IsVR
         {
             get { return true; }
@@ -236,6 +241,7 @@ namespace yourvrexperience.VR
 		}
 		private Quaternion RotationCamera
 		{
+			get { return CameraGO.transform.rotation; }
 			set { 
 #if ENABLE_ULTIMATEXR				
 			if ((CameraGO != null) && (UxrController != null) && (UxrController.UltimateXRAvatar != null))
@@ -480,9 +486,18 @@ namespace yourvrexperience.VR
 		{
 			if (nameEvent.Equals(EventVRInputControllerResetToInitial))
 			{
+				PositionCamera = Vector3.zero;
+				if (parameters.Length > 0)
+				{
+					PositionCamera = (Vector3)parameters[0];
+				}				
 				Vector3 rotationApplied = new Vector3(0, 0, 0);
 				RotationCamera =  Quaternion.Euler(rotationApplied);
-				PositionCamera = Vector3.zero;
+				if (parameters.Length > 1)
+				{
+					RotationCamera = (Quaternion)parameters[1];
+					rotationApplied = RotationCamera.eulerAngles;
+				}				
 				_currentLocalCameraRotation = rotationApplied;
 				_shiftCameraFromOrigin = Vector3.zero;
 			}
@@ -629,7 +644,7 @@ namespace yourvrexperience.VR
 					}
 					if (applyShift)
 					{
-						_shiftCameraFromOrigin +=  shiftMovement * SpeedJoystickMovement * Time.deltaTime;
+						_shiftCameraFromOrigin +=  shiftMovement * speedJoystickMovement * Time.deltaTime;
 						_shiftCameraFromOrigin.y = 0;
 					}
 				}

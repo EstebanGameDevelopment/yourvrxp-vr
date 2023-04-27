@@ -173,12 +173,8 @@ namespace yourvrexperience.VR
 			}
 #endif
             _state = (int)CameraStates.Camera1stPerson;
-        }
-
-		void Start()
-		{
             SystemEventController.Instance.Event += OnSystemEvent;
-		}
+        }
 
         void OnDestroy()
         {			
