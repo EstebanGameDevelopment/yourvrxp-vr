@@ -589,7 +589,7 @@ namespace yourvrexperience.VR
 			return false;
 		}
 
-        void Update()
+		public void UpdateHandSideController()
         {
 			bool rTriggerButton, lTriggerButton;
             if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.triggerButton, out rTriggerButton))
@@ -606,7 +606,12 @@ namespace yourvrexperience.VR
 					SetLaserToLeftHand();                
 				}
             }
+        }
 
+        void Update()
+        {
+			UpdateHandSideController();
+			
 			_rTriggerButtonPrevState = _rTriggerButtonState;
 			_lTriggerButtonPrevState = _lTriggerButtonState;
 

@@ -639,8 +639,8 @@ namespace yourvrexperience.VR
 			return false;
 		}
 
-		void Update()
-		{
+        public void UpdateHandSideController()
+        {
 			if (GetIndexTriggerDown(XR_HAND.right) || GetHandTriggerDown(XR_HAND.right))
 			{
 				HandSelected = XR_HAND.right;
@@ -649,6 +649,11 @@ namespace yourvrexperience.VR
 			{
 				HandSelected = XR_HAND.left;
 			}
+        }
+
+		void Update()
+		{
+			UpdateHandSideController();
 		}
 #endif
     }

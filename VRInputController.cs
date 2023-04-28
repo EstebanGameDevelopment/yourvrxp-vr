@@ -467,6 +467,14 @@ namespace yourvrexperience.VR
 #endif
         }
 
+		public void UpdateHandSideController()
+		{
+			if (VRController != null)
+			{
+				VRController.UpdateHandSideController();
+			}
+		}
+
 		private void EnableTeleport()
 		{
 			if (_linkedAvatar != null)

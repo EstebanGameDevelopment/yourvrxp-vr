@@ -708,6 +708,19 @@ namespace yourvrexperience.VR
 			_currentController = controller;
         }
 
+		public void UpdateHandSideController()
+        {
+			if (_rPrimaryButtonDown)
+			{
+				SetLaserToRightHand();
+			}
+		
+			if (_lPrimaryButtonDown)
+			{
+				SetLaserToLeftHand();                
+			}
+        }
+
 		void Update()
         {
 			SetListeners();

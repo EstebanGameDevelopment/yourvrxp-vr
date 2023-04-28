@@ -29,6 +29,7 @@ namespace yourvrexperience.VR
 		[SerializeField] private GameObject MarkerDestinationDirectional;
         [SerializeField] private Material LineMaterial;
         [SerializeField] private LayerMask AllowedLayers;
+        [SerializeField] private LayerMask ForbiddenLayers;        
         [SerializeField] private float MaxTeleportDistance = 4f;
         [SerializeField] private float MatScale = 5;
         [SerializeField] private Vector3 DestinationNormal;
@@ -212,6 +213,8 @@ namespace yourvrexperience.VR
                 }
 
                 float raycastLength = length * 1.1f;
+
+                if (Physics.Raycast(newRay, out hit, raycastLength, ForbiddenLayers)) break;
 
                 //	Check if we hit something
                 _hitSomething = AllowDestination(newRay, out hit, raycastLength);
