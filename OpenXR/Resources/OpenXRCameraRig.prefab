@@ -3007,6 +3007,9 @@ MonoBehaviour:
   AllowedLayers:
     serializedVersion: 2
     m_Bits: 2147483647
+  ForbiddenLayers:
+    serializedVersion: 2
+    m_Bits: 0
   MaxTeleportDistance: 4
   MatScale: 5
   DestinationNormal: {x: 0, y: 0, z: 0}
@@ -7084,6 +7087,9 @@ MonoBehaviour:
   AllowedLayers:
     serializedVersion: 2
     m_Bits: 2147483647
+  ForbiddenLayers:
+    serializedVersion: 2
+    m_Bits: 0
   MaxTeleportDistance: 4
   MatScale: 5
   DestinationNormal: {x: 0, y: 0, z: 0}

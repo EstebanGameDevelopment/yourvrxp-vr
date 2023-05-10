@@ -36,5 +36,6 @@ namespace yourvrexperience.VR
 		bool GetTwoButtonUp(XR_HAND hand);
 		bool GetTwoButton(XR_HAND hand);		
 		void UpdateHandSideController();
+		void ResetState();
     }
 }

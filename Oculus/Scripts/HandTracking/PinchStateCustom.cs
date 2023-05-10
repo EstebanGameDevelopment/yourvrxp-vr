@@ -1,5 +1,5 @@
 #if ENABLE_OCULUS
-using OculusSampleFramework;
+using Oculus.Interaction;
 #endif
 using System.Collections;
 using System.Collections.Generic;

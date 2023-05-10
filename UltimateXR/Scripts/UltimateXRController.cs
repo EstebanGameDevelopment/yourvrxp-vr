@@ -721,6 +721,18 @@ namespace yourvrexperience.VR
 			}
         }
 
+		public void ResetState()
+		{
+			_rTriggerButtonDown = false; _lTriggerButtonDown = false; _rGripButtonDown = false; _lGripButtonDown = false; _rPrimaryButtonDown = false; _lPrimaryButtonDown = false; _rSecondaryButtonDown = false; _lSecondaryButtonDown = false;
+			_rTriggerButtonUp = false; _lTriggerButtonUp = false; _rGripButtonUp = false; _lGripButtonUp = false; _rPrimaryButtonUp = false; _lPrimaryButtonUp = false; _rSecondaryButtonUp = false; _lSecondaryButtonUp = false;
+
+			_rTriggerButtonState = false; _lTriggerButtonState = false; _rGripButtonState = false; _lGripButtonState = false; _rPrimaryButtonState = false; _lPrimaryButtonState = false; _rSecondaryButtonState = false; _lSecondaryButtonState = false;
+			_rTriggerButtonPrevState = false; _lTriggerButtonPrevState = false; _rGripButtonPrevState = false; _lGripButtonPrevState = false; _rPrimaryButtonPrevState = false; _lPrimaryButtonPrevState = false; _rSecondaryButtonPrevState = false; _lSecondaryButtonPrevState = false;
+
+			_rThumbstickButtonDown = false; _lThumbstickButtonDown = false;
+			_rThumbstickButtonUp = false; _lThumbstickButtonUp = false;
+		}
+
 		void Update()
         {
 			SetListeners();

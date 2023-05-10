@@ -608,6 +608,18 @@ namespace yourvrexperience.VR
             }
         }
 
+		public void ResetState()
+		{
+			_rTriggerButtonDown = false; _lTriggerButtonDown = false; _rGripButtonDown = false; _lGripButtonDown = false; _rPrimaryButtonDown = false; _lPrimaryButtonDown = false; _rSecondaryButtonDown = false; _lSecondaryButtonDown = false;
+			_rTriggerButtonUp = false; _lTriggerButtonUp = false; _rGripButtonUp = false; _lGripButtonUp = false; _rPrimaryButtonUp = false; _lPrimaryButtonUp = false; _rSecondaryButtonUp = false; _lSecondaryButtonUp = false;
+
+			_rTriggerButtonState = false; _lTriggerButtonState = false; _rGripButtonState = false; _lGripButtonState = false; _rPrimaryButtonState = false; _lPrimaryButtonState = false; _rSecondaryButtonState = false; _lSecondaryButtonState = false;
+			_rTriggerButtonPrevState = false; _lTriggerButtonPrevState = false; _rGripButtonPrevState = false; _lGripButtonPrevState = false; _rPrimaryButtonPrevState = false; _lPrimaryButtonPrevState = false; _rSecondaryButtonPrevState = false; _lSecondaryButtonPrevState = false;
+
+			_rThumbstickButtonDown = false; _lThumbstickButtonDown = false;
+			_rThumbstickButtonUp = false; _lThumbstickButtonUp = false;
+		}
+
         void Update()
         {
 			UpdateHandSideController();
@@ -631,8 +643,8 @@ namespace yourvrexperience.VR
 			{
 				if (_rTriggerButtonPrevState != _rTriggerButtonState)
 				{
-					_rTriggerButtonDown |= _rTriggerButtonState;
-					_rTriggerButtonUp |= !_rTriggerButtonState;
+					_rTriggerButtonDown = _rTriggerButtonState;
+					_rTriggerButtonUp = !_rTriggerButtonState;
 				}
 				if (_rTriggerButtonState) 
 				{
@@ -643,8 +655,8 @@ namespace yourvrexperience.VR
 			{
 				if (_lTriggerButtonPrevState != _lTriggerButtonState)
 				{
-					_lTriggerButtonDown |= _lTriggerButtonState;
-					_lTriggerButtonUp |= !_lTriggerButtonState;
+					_lTriggerButtonDown = _lTriggerButtonState;
+					_lTriggerButtonUp = !_lTriggerButtonState;
 				}
 				if (_lTriggerButtonState)
 				{
@@ -655,8 +667,8 @@ namespace yourvrexperience.VR
 			{				
 				if (_rGripButtonPrevState != _rGripButtonState)
 				{
-					_rGripButtonDown |= _rGripButtonState;
-					_rGripButtonUp |= !_rGripButtonState;
+					_rGripButtonDown = _rGripButtonState;
+					_rGripButtonUp = !_rGripButtonState;
 				}
 				if (_rGripButtonState)
 				{
@@ -667,8 +679,8 @@ namespace yourvrexperience.VR
 			{
 				if (_lGripButtonPrevState != _lGripButtonState)
 				{
-					_lGripButtonDown |= _lGripButtonState;
-					_lGripButtonUp |= !_lGripButtonState;
+					_lGripButtonDown = _lGripButtonState;
+					_lGripButtonUp = !_lGripButtonState;
 				}
 				if (_lGripButtonState)
 				{
@@ -679,48 +691,48 @@ namespace yourvrexperience.VR
 			{
 				if (_rPrimaryButtonPrevState != _rPrimaryButtonState)
 				{
-					_rPrimaryButtonDown |= _rPrimaryButtonState;
-					_rPrimaryButtonUp |= !_rPrimaryButtonState;
+					_rPrimaryButtonDown = _rPrimaryButtonState;
+					_rPrimaryButtonUp = !_rPrimaryButtonState;
 				}
 			}
 			if (InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(CommonUsages.primaryButton, out _lPrimaryButtonState))
 			{
 				if (_lPrimaryButtonPrevState != _lPrimaryButtonState)
 				{
-					_lPrimaryButtonDown |= _lPrimaryButtonState;
-					_lPrimaryButtonUp |= !_lPrimaryButtonState;
+					_lPrimaryButtonDown = _lPrimaryButtonState;
+					_lPrimaryButtonUp = !_lPrimaryButtonState;
 				}
 			}
 			if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.secondaryButton, out _rSecondaryButtonState))
 			{
 				if (_rPrimaryButtonPrevState != _rSecondaryButtonState)
 				{
-					_rPrimaryButtonDown |= _rSecondaryButtonState;
-					_rPrimaryButtonUp |= !_rSecondaryButtonState;
+					_rPrimaryButtonDown = _rSecondaryButtonState;
+					_rPrimaryButtonUp = !_rSecondaryButtonState;
 				}
 			}
 			if (InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(CommonUsages.secondaryButton, out _lSecondaryButtonState))
 			{
 				if (_lSecondaryButtonPrevState != _lSecondaryButtonState)
 				{
-					_lSecondaryButtonDown |= _lSecondaryButtonState;
-					_lSecondaryButtonUp |= !_lSecondaryButtonState;
+					_lSecondaryButtonDown = _lSecondaryButtonState;
+					_lSecondaryButtonUp = !_lSecondaryButtonState;
 				}
 			}
 			if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.primary2DAxisClick, out _rThumbstickButtonState))
 			{
 				if (_rThumbstickButtonPrevState != _rThumbstickButtonState)
 				{
-					_rThumbstickButtonDown |= _rThumbstickButtonState;
-					_rThumbstickButtonUp |= !_rThumbstickButtonState;
+					_rThumbstickButtonDown = _rThumbstickButtonState;
+					_rThumbstickButtonUp = !_rThumbstickButtonState;
 				}
 			}
 			if (InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(CommonUsages.primary2DAxisClick, out _lThumbstickButtonState))
 			{
 				if (_lThumbstickButtonPrevState != _lThumbstickButtonState)
 				{
-					_lThumbstickButtonDown |= _lThumbstickButtonState;
-					_lThumbstickButtonUp |= !_lThumbstickButtonState;
+					_lThumbstickButtonDown = _lThumbstickButtonState;
+					_lThumbstickButtonUp = !_lThumbstickButtonState;
 				}
 			}
         }

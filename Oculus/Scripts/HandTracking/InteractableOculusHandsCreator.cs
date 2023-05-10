@@ -1,7 +1,8 @@
 #if ENABLE_OCULUS
+using Oculus.Interaction;
 using OculusSampleFramework;
-using System;
 #endif
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

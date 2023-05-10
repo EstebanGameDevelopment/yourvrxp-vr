@@ -4,7 +4,7 @@ using yourvrexperience.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 #if ENABLE_OCULUS
-using OculusSampleFramework;
+using Oculus.Interaction;
 #endif
 
 namespace yourvrexperience.VR

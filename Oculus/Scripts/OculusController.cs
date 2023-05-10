@@ -1,4 +1,5 @@
 #if ENABLE_OCULUS
+using Oculus.Interaction;
 using OculusSampleFramework;
 #endif
 using System;
@@ -99,7 +100,6 @@ namespace yourvrexperience.VR
 				{
 					return OculusRightController; 
 				}
-				
 			}
 		}
         public LineRenderer RaycastLineLeft
@@ -650,6 +650,10 @@ namespace yourvrexperience.VR
 				HandSelected = XR_HAND.left;
 			}
         }
+
+		public void ResetState()
+		{
+		}
 
 		void Update()
 		{

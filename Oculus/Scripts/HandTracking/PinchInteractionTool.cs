@@ -1,5 +1,6 @@
-#if ENABLE_OCULUS
 using yourvrexperience.Utils;
+#if ENABLE_OCULUS
+using Oculus.Interaction;
 using OculusSampleFramework;
 #endif
 using System;

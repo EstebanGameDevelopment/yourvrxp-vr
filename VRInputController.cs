@@ -25,6 +25,7 @@ namespace yourvrexperience.VR
 		public const string EventVRInputControllerHandTriggered = "EventVRInputControllerHandTriggered";
 		public const string EventVRInputControllerChangedHandTrackingState = "EventVRInputControllerChangedHandTrackingState";
 		public const string EventVRInputControllerChangeLocomotion = "EventVRInputControllerChangeLocomotion";
+		public const string EventVRInputControllerResetAllInputs = "EventVRInputControllerResetAllInputs";
 		
 		public const float TimeoutCheckMovement = 0.1f;
 		public const float SensivilityJoysticks = 0.5f;
@@ -492,6 +493,10 @@ namespace yourvrexperience.VR
 
 		private void OnVREvent(string nameEvent, object[] parameters)
 		{
+			if (nameEvent.Equals(EventVRInputControllerResetAllInputs))
+			{				
+				VRController.ResetState();
+			}
 			if (nameEvent.Equals(EventVRInputControllerResetToInitial))
 			{
 				PositionCamera = Vector3.zero;

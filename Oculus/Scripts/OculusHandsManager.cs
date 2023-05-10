@@ -1,4 +1,5 @@
 #if ENABLE_OCULUS
+using Oculus.Interaction;
 using OculusSampleFramework;
 #endif
 using System;
