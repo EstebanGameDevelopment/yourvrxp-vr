@@ -43,6 +43,8 @@ namespace yourvrexperience.VR
                 _keyboardManager.Destroy();
                 _keyboardManager = null;
 
+                base.Destroy();
+
                 UIEventController.Instance.Event -= OnUIEvent;
 
 				UIEventController.Instance.DispatchUIEvent(ScreenController.EventScreenControllerDestroyScreen, this.gameObject);
