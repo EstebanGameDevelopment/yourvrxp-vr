@@ -26,6 +26,7 @@ namespace yourvrexperience.VR
 		public const string EventVRInputControllerChangedHandTrackingState = "EventVRInputControllerChangedHandTrackingState";
 		public const string EventVRInputControllerChangeLocomotion = "EventVRInputControllerChangeLocomotion";
 		public const string EventVRInputControllerResetAllInputs = "EventVRInputControllerResetAllInputs";
+		public const string EventVRInputControllerSetFreeMovement = "EventVRInputControllerSetFreeMovement";
 		
 		public const float TimeoutCheckMovement = 0.1f;
 		public const float SensivilityJoysticks = 0.5f;
@@ -133,6 +134,7 @@ namespace yourvrexperience.VR
         private IVRController _vrController;
 		private bool _isMovingCamera = false;
 		private bool _applyRotation = false;
+		private bool _applyFree3DMovement = false;
 		private Vector3 _centerLevel = Vector3.zero;
 		private XR_HAND _enableJoystickRotation;
 		private GameObject _sphereCollision;
@@ -493,6 +495,10 @@ namespace yourvrexperience.VR
 
 		private void OnVREvent(string nameEvent, object[] parameters)
 		{
+			if (nameEvent.Equals(EventVRInputControllerSetFreeMovement))
+			{				
+				_applyFree3DMovement = (bool)parameters[0];
+			}
 			if (nameEvent.Equals(EventVRInputControllerResetAllInputs))
 			{				
 				VRController.ResetState();
@@ -640,25 +646,42 @@ namespace yourvrexperience.VR
 				{
 					Vector3 forward = joystick.y * cameraForward;
                 	Vector3 lateral = joystick.x * cameraRigth;
-					Vector3 shiftMovement = (forward + lateral).normalized;
- 
- 					RaycastHit hitCollision = new RaycastHit();
-					GameObject collideObject = RaycastingTools.GetRaycastObject(PositionCamera, shiftMovement, RadiusVRPlayer, ref hitCollision);
-					bool applyShift = true;
-					if (collideObject != null)
+					Vector3 upwards = Vector3.zero;
+					if (_applyFree3DMovement)
 					{
-						if (collideObject.GetComponent<Collider>() != null)
+						if (VRController.GetHandTrigger(XR_HAND.both))
 						{
-							if (!collideObject.GetComponent<Collider>().isTrigger)
-							{
-								applyShift = false;
-							}
+							upwards = joystick.y * Vector3.up;
+							forward = Vector3.zero;
+							lateral = Vector3.zero;
 						}
 					}
-					if (applyShift)
+					Vector3 shiftMovement = (forward + lateral + upwards).normalized;
+ 
+ 					if (_applyFree3DMovement)
 					{
 						_shiftCameraFromOrigin +=  shiftMovement * speedJoystickMovement * Time.deltaTime;
-						_shiftCameraFromOrigin.y = 0;
+					}
+					else
+					{
+						RaycastHit hitCollision = new RaycastHit();
+						GameObject collideObject = RaycastingTools.GetRaycastObject(PositionCamera, shiftMovement, RadiusVRPlayer, ref hitCollision);
+						bool applyShift = true;
+						if (collideObject != null)
+						{
+							if (collideObject.GetComponent<Collider>() != null)
+							{
+								if (!collideObject.GetComponent<Collider>().isTrigger)
+								{
+									applyShift = false;
+								}
+							}
+						}
+						if (applyShift)
+						{
+							_shiftCameraFromOrigin +=  shiftMovement * speedJoystickMovement * Time.deltaTime;
+							_shiftCameraFromOrigin.y = 0;
+						}
 					}
 				}
 			}
@@ -712,7 +735,14 @@ namespace yourvrexperience.VR
 		{
 			if (_linkedAvatar != null)
 			{
-				_linkedAvatar.transform.position = new Vector3(PositionCamera.x, _linkedAvatar.transform.position.y, PositionCamera.z);
+				if (_applyFree3DMovement)
+				{
+					_linkedAvatar.transform.position = new Vector3(PositionCamera.x, PositionCamera.y, PositionCamera.z);
+				}
+				else
+				{
+					_linkedAvatar.transform.position = new Vector3(PositionCamera.x, _linkedAvatar.transform.position.y, PositionCamera.z);
+				}
 				Vector3 directionAvatar = VRController.HeadController.transform.forward;				
 				if (FixLinkedAvatarYAxis)
 				{
