@@ -1025,7 +1025,11 @@ namespace yourvrexperience.VR
 				Vector3 posRotatedWorld = Utilities.RotatePoint(scaledPositionWorld, Vector2.zero, -_currentLocalCameraRotation.y);
 				Vector3 nextPosition = centerLevel + new Vector3(posRotatedWorld.x, 0, posRotatedWorld.y) + _shiftCameraFromOrigin;
 				PositionCamera = nextPosition;
-				Vector3 shiftToRecenter = -new Vector3(VRController.HeadController.transform.localPosition.x, VerticalCameraShift - (positionWorld.y * ScaleMovementY), VRController.HeadController.transform.localPosition.z);
+				float finalVerticalCameraShift = VerticalCameraShift;
+#if ENABLE_OPENXR				
+				finalVerticalCameraShift += 1;
+#endif
+				Vector3 shiftToRecenter = -new Vector3(VRController.HeadController.transform.localPosition.x, finalVerticalCameraShift - (positionWorld.y * ScaleMovementY), VRController.HeadController.transform.localPosition.z);
 				VRController.HeadController.transform.parent.localPosition = shiftToRecenter;
 #endif
 #if ENABLE_AVATAR_OCULUS				
