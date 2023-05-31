@@ -95,9 +95,7 @@ namespace yourvrexperience.VR
         }
         public XR_HAND HandSelected
         {
-            get { 
-				return _handSelected; 
-			}
+            get {  return _handSelected; }
         }
 		public LineRenderer RaycastLineLeft
         {
