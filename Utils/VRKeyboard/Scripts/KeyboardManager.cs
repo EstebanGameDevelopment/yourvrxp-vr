@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 using yourvrexperience.Utils;
+using static TMPro.TMP_InputField;
 
 namespace yourvrexperience.VR
 {
@@ -39,8 +40,11 @@ namespace yourvrexperience.VR
         private Key[] keyList;
         private bool capslockFlag;
 
-        public void Initialize()
+        private ContentType _typeInput;
+
+        public void Initialize(ContentType typeInput)
         {
+            _typeInput = typeInput;
             keyList = keys.GetComponentsInChildren<Key>();
             UIEventController.Instance.Event += OnUIEvent;
             capslockFlag = isUppercase;
@@ -64,12 +68,58 @@ namespace yourvrexperience.VR
             capslockFlag = !capslockFlag;
         }
 
+        private ContentType IdentifyCharacterType(char c)
+        {
+            if (c == '.')
+                return ContentType.DecimalNumber;
+
+            if (char.IsDigit(c))
+                return ContentType.IntegerNumber;
+
+            if (char.IsLetter(c))
+                return ContentType.Alphanumeric;
+
+            return ContentType.Standard;
+        }
+
         private void OnUIEvent(string nameEvent, object[] parameters)
         {
             if (nameEvent.Equals(EventKeyboardManagerKeycode))
             {
                 if (Input.Length > maxInputLength) { return; }
-                Input += (string)parameters[0];
+
+                string character = (string)parameters[0];
+                if (character.Length == 1)
+                {
+                    ContentType typeCharacter = IdentifyCharacterType(character[0]);
+                    switch (_typeInput)
+                    {
+                        case ContentType.Standard:
+                            Input += character;
+                            break;
+
+                        case ContentType.Alphanumeric:
+                            if ((typeCharacter != ContentType.Standard) && (typeCharacter != ContentType.DecimalNumber))
+                            {
+                                Input += character;
+                            }                            
+                            break;
+
+                        case ContentType.IntegerNumber:
+                            if (typeCharacter == ContentType.IntegerNumber)
+                            {
+                                Input += character;
+                            }                            
+                            break;
+
+                        case ContentType.DecimalNumber:
+                            if ((typeCharacter == ContentType.IntegerNumber) || (typeCharacter == ContentType.DecimalNumber))
+                            {
+                                Input += character;
+                            }                            
+                            break;
+                    }                    
+                }
             }
             if (nameEvent.Equals(EventKeyboardManagerEnter))
             {

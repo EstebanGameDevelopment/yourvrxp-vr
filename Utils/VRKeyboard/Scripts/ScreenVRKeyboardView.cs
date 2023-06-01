@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using yourvrexperience.Utils;
+using static TMPro.TMP_InputField;
 
 namespace yourvrexperience.VR
 {
@@ -17,6 +19,8 @@ namespace yourvrexperience.VR
 
 		private GameObject _target;
         private KeyboardManager _keyboardManager;
+        private TMP_InputField _inputField;
+        private ContentType _typeContent = ContentType.Standard;
 
         public override void Initialize(params object[] parameters)
         {
@@ -24,10 +28,23 @@ namespace yourvrexperience.VR
 
             _keyboardManager = _content.GetComponentInChildren<KeyboardManager>();
 			_target = (GameObject)parameters[0];
-            _keyboardManager.inputText.text = (string)parameters[1];
+            if (parameters[1] is TMP_InputField)
+            {
+                _inputField = (TMP_InputField)parameters[1];
+                _keyboardManager.inputText.text = _inputField.text;
+                _typeContent = _inputField.contentType;
+            }
+            else
+            {
+                _keyboardManager.inputText.text = (string)parameters[1];
+                _typeContent = ContentType.Standard;
+                if (parameters.Length > 3)
+                {
+                    _typeContent = (ContentType)parameters[3];
+                }                
+            }
             _keyboardManager.maxInputLength = (int)parameters[2];
-            _keyboardManager.Initialize();
-
+            _keyboardManager.Initialize(_typeContent);
             UIEventController.Instance.Event += OnUIEvent;
 		}
 
