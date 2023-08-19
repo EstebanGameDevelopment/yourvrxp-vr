@@ -34,6 +34,7 @@ namespace yourvrexperience.VR
 #if ENABLE_OPENXR
         private XR_HAND _handSelected = XR_HAND.none;
         private GameObject _currentController;
+		private GameObject _otherController;
 
         private LineRenderer _raycastLineLeft;
         private LineRenderer _raycastLineRight;
@@ -93,6 +94,10 @@ namespace yourvrexperience.VR
         {
             get { return _currentController; }
         }
+ 		public GameObject OtherController
+        {
+            get { return _otherController; }
+        }		
         public XR_HAND HandSelected
         {
             get {  return _handSelected; }
@@ -264,7 +269,7 @@ namespace yourvrexperience.VR
                     if (_rightLineVisual != null) _rightLineVisual.enabled = false;
                     if (_leftLineVisual != null) _leftLineVisual.enabled = true;
                 }
-				SetMainLaserPoint(OpenXRLeftController);
+				SetMainLaserPoint(OpenXRLeftController, OpenXRRightController);
             }
         }
 
@@ -278,13 +283,14 @@ namespace yourvrexperience.VR
 					if (_leftLineVisual != null) _leftLineVisual.enabled = false;
                     if (_rightLineVisual != null) _rightLineVisual.enabled = true;
                 }
-                SetMainLaserPoint(OpenXRRightController);
+                SetMainLaserPoint(OpenXRRightController, OpenXRLeftController);
             }
         }
 
-        private void SetMainLaserPoint(GameObject controller)
+        private void SetMainLaserPoint(GameObject controller, GameObject other)
         {
 			_currentController = controller;
+			_otherController = other;
         }
 
 		public Vector2 GetVector2Joystick(XR_HAND hand)

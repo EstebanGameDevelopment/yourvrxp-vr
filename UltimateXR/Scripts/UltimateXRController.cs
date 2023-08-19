@@ -42,7 +42,8 @@ namespace yourvrexperience.VR
 #if ENABLE_ULTIMATEXR
 		private Camera _mainCamera;
         private XR_HAND _handSelected = XR_HAND.none;
-        private GameObject _currentController;		
+        private GameObject _currentController;	
+		private GameObject _otherController;
         private LineRenderer _raycastLineLeft;
         private LineRenderer _raycastLineRight;
 		private bool _controllersEnabled = false;
@@ -80,6 +81,10 @@ namespace yourvrexperience.VR
 		public GameObject CurrentController 
 		{ 
 			get { return _currentController; } 
+		}
+		public GameObject OtherController 
+		{ 
+			get { return _otherController; } 
 		}
 
 		public LineRenderer RaycastLineLeft
@@ -690,7 +695,7 @@ namespace yourvrexperience.VR
             if (_handSelected != XR_HAND.left)
             {
                 _handSelected = XR_HAND.left;
-				SetMainLaserPoint(UltimateXRLeftRay);
+				SetMainLaserPoint(UltimateXRLeftRay, UltimateXRRightRay);
             }
         }
 
@@ -699,13 +704,14 @@ namespace yourvrexperience.VR
             if (_handSelected != XR_HAND.right)
             {
                 _handSelected = XR_HAND.right;
-				SetMainLaserPoint(UltimateXRRightRay);
+				SetMainLaserPoint(UltimateXRRightRay, UltimateXRLeftRay);
             }
         }
 
-        private void SetMainLaserPoint(GameObject controller)
+        private void SetMainLaserPoint(GameObject controller, GameObject other)
         {
 			_currentController = controller;
+			_otherController = other;
         }
 
 		public void UpdateHandSideController()

@@ -137,6 +137,33 @@ namespace yourvrexperience.VR
 				}
             }
         }
+        public GameObject OtherController
+        {
+            get {
+				if (_ovrHandsManager.HandsBeingTracked)
+				{
+					if (_ovrHandsManager.ReferenceToRay != null)
+					{
+						return _ovrHandsManager.ReferenceToRay.gameObject;
+					}
+					else
+					{
+						return null;
+					}					
+				}
+				else
+				{
+					if (_handSelected != XR_HAND.right)
+					{
+						return _raycastLineRight.gameObject;
+					}
+					else
+					{
+						return _raycastLineLeft.gameObject;
+					}
+				}
+            }
+        }
 		private OculusHandsManager OvrHandsManager
 		{
 			get {

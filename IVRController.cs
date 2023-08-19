@@ -10,6 +10,7 @@ namespace yourvrexperience.VR
 		Camera Camera { get; }
 		GameObject Container { get; }
 		GameObject CurrentController { get; }
+		GameObject OtherController { get; }
 		XR_HAND HandSelected { get; }
 		GameObject HeadController { get; }
 		GameObject HandLeftController { get; }
