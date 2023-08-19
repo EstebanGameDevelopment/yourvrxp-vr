@@ -15,6 +15,8 @@ namespace yourvrexperience.VR
 {
 	public class PalmMenuController : MonoBehaviour
 	{
+		public const string EventPalmMenuControllerShow = "EventPalmMenuControllerShow";
+
 		public const string LAYER_HAND = "Hand";
 
 		[SerializeField] private GameObject _facePointerDetector;
@@ -113,7 +115,13 @@ namespace yourvrexperience.VR
 
 		protected virtual void OnSystemEvent(string nameEvent, object[] parameters)
 		{
-			
+			if (nameEvent.Equals(EventPalmMenuControllerShow))
+			{
+#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR			
+				_visualsContainer.transform.forward = VRInputController.Instance.VRController.HeadController.transform.forward;
+				_visualsContainer.SetActive(true);
+#endif			
+			}
 		}
 
 		protected virtual void ActivationHandMenu(GameObject menuPosition)
