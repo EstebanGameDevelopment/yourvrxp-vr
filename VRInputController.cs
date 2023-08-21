@@ -27,6 +27,7 @@ namespace yourvrexperience.VR
 		public const string EventVRInputControllerChangeLocomotion = "EventVRInputControllerChangeLocomotion";
 		public const string EventVRInputControllerResetAllInputs = "EventVRInputControllerResetAllInputs";
 		public const string EventVRInputControllerSetFreeMovement = "EventVRInputControllerSetFreeMovement";
+		public const string EventVRInputControllerChangedHandSide = "EventVRInputControllerChangedHandSide";
 		
 		public const float TimeoutCheckMovement = 0.1f;
 		public const float SensivilityJoysticks = 0.5f;

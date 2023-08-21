@@ -264,6 +264,7 @@ namespace yourvrexperience.VR
             if (_handSelected != XR_HAND.left)
             {
                 _handSelected = XR_HAND.left;
+				VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangedHandSide, _handSelected);
                 if (_leftLineVisual != null)
                 {
                     if (_rightLineVisual != null) _rightLineVisual.enabled = false;
@@ -278,6 +279,7 @@ namespace yourvrexperience.VR
             if (_handSelected != XR_HAND.right)
             {
                 _handSelected = XR_HAND.right;
+				VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangedHandSide, _handSelected);
                 if (_rightLineVisual != null)
                 {
 					if (_leftLineVisual != null) _leftLineVisual.enabled = false;

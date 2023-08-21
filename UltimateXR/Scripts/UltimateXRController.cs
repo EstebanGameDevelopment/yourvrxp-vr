@@ -695,6 +695,7 @@ namespace yourvrexperience.VR
             if (_handSelected != XR_HAND.left)
             {
                 _handSelected = XR_HAND.left;
+				VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangedHandSide, _handSelected);
 				SetMainLaserPoint(UltimateXRLeftRay, UltimateXRRightRay);
             }
         }
@@ -704,6 +705,7 @@ namespace yourvrexperience.VR
             if (_handSelected != XR_HAND.right)
             {
                 _handSelected = XR_HAND.right;
+				VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangedHandSide, _handSelected);
 				SetMainLaserPoint(UltimateXRRightRay, UltimateXRLeftRay);
             }
         }

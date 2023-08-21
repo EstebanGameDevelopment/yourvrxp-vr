@@ -189,6 +189,7 @@ namespace yourvrexperience.VR
             get { return _handSelected; }
             set {
 				_handSelected = value;
+				VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangedHandSide, _handSelected);
 				if (CurrentController != null)
 				{
 					DisableRays();
