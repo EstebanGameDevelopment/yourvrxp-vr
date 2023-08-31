@@ -552,15 +552,19 @@ namespace yourvrexperience.VR
 			}
 			if (nameEvent.Equals(EventVRInputControllerLinkWithHand))
 			{
-				GameObject hand = (GameObject)parameters[0];
-				XR_HAND targetHand = (XR_HAND)parameters[1];
-				if (targetHand == XR_HAND.left)
+				bool iAmOwner = (bool)parameters[0];
+				if (iAmOwner)
 				{
-					_linkedHandLeft = hand;
-				}
-				else
-				{
-					_linkedHandRight = hand;
+					GameObject hand = (GameObject)parameters[1];
+					XR_HAND targetHand = (XR_HAND)parameters[2];
+					if (targetHand == XR_HAND.left)
+					{
+						_linkedHandLeft = hand;
+					}
+					else
+					{
+						_linkedHandRight = hand;
+					}
 				}
 			}
 			if (nameEvent.Equals(TeleportController.EventTeleportControllerConfirmation))
