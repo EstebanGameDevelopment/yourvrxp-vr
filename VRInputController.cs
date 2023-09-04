@@ -1032,17 +1032,11 @@ namespace yourvrexperience.VR
 				PositionCamera = nextPosition;
 				float finalVerticalCameraShift = VerticalCameraShift;
 #if ENABLE_OPENXR				
-				finalVerticalCameraShift += 1;
+				// finalVerticalCameraShift += 1;
 #endif
 				Vector3 shiftToRecenter = -new Vector3(VRController.HeadController.transform.localPosition.x, finalVerticalCameraShift - (positionWorld.y * ScaleMovementY), VRController.HeadController.transform.localPosition.z);
 				VRController.HeadController.transform.parent.localPosition = shiftToRecenter;
 #endif
-#if ENABLE_AVATAR_OCULUS				
-				if (_avatarEntity != null)
-				{
-					_avatarEntity.transform.localPosition = shiftToRecenter;
-				}
-#endif				
 			}
 			else
 			{
