@@ -574,7 +574,7 @@ namespace yourvrexperience.VR
 				if (_linkedAvatar != null)
 				{
 					_linkedAvatar.transform.position = new Vector3(_linkedAvatar.transform.position.x,
-																	_linkedAvatar.transform.position.y + (shiftTeleport.y + _linkedAvatar.transform.localScale.y),
+																	_linkedAvatar.transform.position.y,
 																	_linkedAvatar.transform.position.z);
 				}
 				else
@@ -1049,14 +1049,14 @@ namespace yourvrexperience.VR
 			ProcessQueuedEvents();
 			
 #if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR
+			UpdateCameraRigPositionWith6DOF();
 			if (_enableLocomotion)
 			{
-				UpdateCameraRigPositionWith6DOF();
 				ApplyJoystickRotation();
 				ApplyJoystickMovement();
-				UpdateLinkedAvatar();
 				RefreshMovementDetected();
 			}
+			UpdateLinkedAvatar();
 
 			ReportHandGestures();
 
