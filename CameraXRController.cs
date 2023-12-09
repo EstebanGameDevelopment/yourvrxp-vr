@@ -171,6 +171,16 @@ namespace yourvrexperience.VR
 					Instantiate(DesktopInputControllerPrefab);
 				}
 			}
+            else
+            {
+				if (!_instantiated)
+				{
+					_instantiated = true;
+					_cameraDesktop = GameObject.FindObjectOfType<Camera>().gameObject;
+					_eventSystemDesktop = Instantiate(EventSystemDesktop) as GameObject;
+					Instantiate(DesktopInputControllerPrefab);
+				}
+            }
 #endif
             _state = (int)CameraStates.Camera1stPerson;
             SystemEventController.Instance.Event += OnSystemEvent;
