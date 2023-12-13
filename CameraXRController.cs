@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using yourvrexperience.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System;
 #if ENABLE_OCULUS
 using Oculus.Interaction;
 #endif
@@ -186,6 +187,11 @@ namespace yourvrexperience.VR
             SystemEventController.Instance.Event += OnSystemEvent;
         }
 
+        void Start()
+        {
+            VRInputController.Instance.Event += OnVREvent;
+        }
+
         void OnDestroy()
         {			
 			Destroy();
@@ -199,6 +205,7 @@ namespace yourvrexperience.VR
 				_instance = null;
 				_inputControls = null;
 				if (SystemEventController.Instance != null) SystemEventController.Instance.Event -= OnSystemEvent;
+                if (VRInputController.Instance != null) VRInputController.Instance.Event -= OnVREvent;
 
 				GameObject.Destroy(this.gameObject);
 			}
@@ -213,6 +220,14 @@ namespace yourvrexperience.VR
 			}					
 #endif				
 		}
+
+        private void OnVREvent(string nameEvent, object[] parameters)
+        {
+            if (nameEvent.Equals(VRInputController.EventVRInputControllerDisconnectPlayer))
+            {
+                _player = null;
+            }
+        }
 
         private void OnSystemEvent(string nameEvent, object[] parameters)
         {

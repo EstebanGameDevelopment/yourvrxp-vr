@@ -28,6 +28,7 @@ namespace yourvrexperience.VR
 		public const string EventVRInputControllerResetAllInputs = "EventVRInputControllerResetAllInputs";
 		public const string EventVRInputControllerSetFreeMovement = "EventVRInputControllerSetFreeMovement";
 		public const string EventVRInputControllerChangedHandSide = "EventVRInputControllerChangedHandSide";
+		public const string EventVRInputControllerDisconnectPlayer = "EventVRInputControllerDisconnectPlayer";
 		
 		public const float TimeoutCheckMovement = 0.1f;
 		public const float SensivilityJoysticks = 0.5f;
@@ -610,6 +611,10 @@ namespace yourvrexperience.VR
 					DispatchVREvent(ScreenController.EventScreenControllerResponseCameraData, targetScreen, Camera.main.transform.position, Camera.main.transform.forward);
 				}				
             }
+			if (nameEvent.Equals(VRInputController.EventVRInputControllerDisconnectPlayer))
+			{
+				_linkedAvatar = null;
+			}
 		}
 
 		private void RefreshMovementDetected()
