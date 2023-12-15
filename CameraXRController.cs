@@ -189,7 +189,7 @@ namespace yourvrexperience.VR
 
         void Start()
         {
-            VRInputController.Instance.Event += OnVREvent;
+            if (VRInputController.Instance != null) VRInputController.Instance.Event += OnVREvent;
         }
 
         void OnDestroy()
