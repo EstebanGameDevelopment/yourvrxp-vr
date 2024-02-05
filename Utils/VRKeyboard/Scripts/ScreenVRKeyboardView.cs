@@ -33,6 +33,10 @@ namespace yourvrexperience.VR
                 _inputField = (TMP_InputField)parameters[1];
                 _keyboardManager.inputText.text = _inputField.text;
                 _typeContent = _inputField.contentType;
+                if (parameters.Length > 3)
+                {
+                    _typeContent = (ContentType)parameters[3];
+                } 
             }
             else
             {
