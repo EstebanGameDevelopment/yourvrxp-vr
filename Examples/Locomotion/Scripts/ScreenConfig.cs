@@ -29,7 +29,7 @@ namespace yourvrexperience.VR
 		public override void Initialize(params object[] parameters)
 		{
 			base.Initialize(parameters);
-#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR					
+#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR	|| ENABLE_NREAL				
 			_leftHand = VRInputController.Instance.LocomotionLeftHand;
 			_rightHand = VRInputController.Instance.LocomotionRightHand;
 #endif			
@@ -49,7 +49,7 @@ namespace yourvrexperience.VR
 			_rightHand++;
 			if ((int)_rightHand > 3) _rightHand = 0;
 			rightHandInfo.text = _rightHand.ToString();
-#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR					
+#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR	|| ENABLE_NREAL				
 			VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangeLocomotion, true, _rightHand);
 #endif			
 		}
@@ -59,7 +59,7 @@ namespace yourvrexperience.VR
 			_leftHand++;
 			if ((int)_leftHand > 3) _leftHand = 0;
 			leftHandInfo.text = _leftHand.ToString();
-#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR					
+#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR	|| ENABLE_NREAL
 			VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerChangeLocomotion, false, _leftHand);
 #endif			
 		}
@@ -71,7 +71,7 @@ namespace yourvrexperience.VR
 
 		public override void Destroy()
 		{
-#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR					
+#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR	|| ENABLE_NREAL				
 			VRInputController.Instance.DispatchVREvent(VRInputController.EventVRInputControllerEnableLocomotion, true);
 #endif			
 			base.Destroy();

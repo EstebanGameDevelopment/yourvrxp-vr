@@ -4,6 +4,9 @@ using yourvrexperience.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
+#if ENABLE_NREAL
+using NRKernal;
+#endif
 #if ENABLE_OCULUS
 using Oculus.Interaction;
 #endif
@@ -46,6 +49,9 @@ namespace yourvrexperience.VR
 		[SerializeField] private GameObject EventSystemOpenXR;
 		[SerializeField] private GameObject CameraUltimateXR;
 		[SerializeField] private GameObject EventSystemUltimateXR;
+		[SerializeField] private GameObject NRealCameraXR;
+		[SerializeField] private GameObject NRealInputXR;
+        [SerializeField] private GameObject EventSystemNReal;
 
 		[SerializeField] private GameObject DesktopInputControllerPrefab;
 		[SerializeField] private GameObject VRInputControllerPrefab;
@@ -69,6 +75,10 @@ namespace yourvrexperience.VR
 #elif ENABLE_ULTIMATEXR					
 		private GameObject _avatarUltimateXR;
 		private GameObject _eventSystemUltimateXR;
+#elif ENABLE_NREAL
+		private GameObject _cameraNRealXR;
+        private GameObject _inputNRealXR;
+		private GameObject _eventSystemNRealXR;
 #else
 		private GameObject _cameraDesktop;
 		private GameObject _eventSystemDesktop;
@@ -99,7 +109,7 @@ namespace yourvrexperience.VR
         {
             get
             {
-#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR
+#if ENABLE_OCULUS || ENABLE_OPENXR || ENABLE_ULTIMATEXR || ENABLE_NREAL
 				if (InputControls.IsVR)
 				{
 					return VRInputController.Instance.CameraGO;
@@ -161,6 +171,18 @@ namespace yourvrexperience.VR
 					Instantiate(VRInputControllerPrefab);
 				}
 			}
+#elif ENABLE_NREAL						
+			if ((GameObject.FindObjectOfType<NRHMDPoseTracker>() == null) && (NRealCameraXR != null))
+			{
+				if (!_instantiated)
+				{
+					_instantiated = true;
+					_cameraNRealXR = Instantiate(NRealCameraXR) as GameObject;
+                    _inputNRealXR = Instantiate(NRealInputXR) as GameObject;
+                    _eventSystemNRealXR = Instantiate(EventSystemNReal) as GameObject;
+                    Instantiate(VRInputControllerPrefab);
+				}
+			}
 #else
 			if ((GameObject.FindObjectOfType<Camera>() == null) && (CameraDesktop != null))
 			{
@@ -168,7 +190,7 @@ namespace yourvrexperience.VR
 				{
 					_instantiated = true;
 					_cameraDesktop = Instantiate(CameraDesktop) as GameObject;
-					_eventSystemDesktop = Instantiate(EventSystemDesktop) as GameObject;
+					_eventSystemDesktop = Instantiate(EventSystemDesktop) as GameObject;                    
 					Instantiate(DesktopInputControllerPrefab);
 				}
 			}
@@ -263,7 +285,11 @@ namespace yourvrexperience.VR
 					DontDestroyOnLoad(_eventSystemOpenXR);
 #elif ENABLE_ULTIMATEXR	
 					DontDestroyOnLoad(_avatarUltimateXR);							
-					DontDestroyOnLoad(_eventSystemUltimateXR);					
+					DontDestroyOnLoad(_eventSystemUltimateXR);	
+#elif ENABLE_NREAL
+                    DontDestroyOnLoad(_cameraNRealXR);	
+                    DontDestroyOnLoad(_inputNRealXR);	
+                    DontDestroyOnLoad(_eventSystemNRealXR);	
 #else
 					DontDestroyOnLoad(_cameraDesktop);
 					DontDestroyOnLoad(_eventSystemDesktop);
@@ -285,6 +311,10 @@ namespace yourvrexperience.VR
 #elif ENABLE_ULTIMATEXR						
 					if (_avatarUltimateXR != null) GameObject.Destroy(_avatarUltimateXR);
 					if (_eventSystemUltimateXR != null) GameObject.Destroy(_eventSystemUltimateXR);
+#elif ENABLE_NREAL
+					if (_cameraNRealXR != null) GameObject.Destroy(_cameraNRealXR);
+					if (_inputNRealXR != null) GameObject.Destroy(_inputNRealXR);
+					if (_eventSystemNRealXR != null) GameObject.Destroy(_eventSystemNRealXR);
 #else
 					if (_cameraDesktop != null) GameObject.Destroy(_cameraDesktop);
 					if (_eventSystemDesktop != null) GameObject.Destroy(_eventSystemDesktop);
