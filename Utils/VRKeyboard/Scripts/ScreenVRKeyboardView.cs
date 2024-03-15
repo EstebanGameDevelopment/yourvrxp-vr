@@ -117,9 +117,9 @@ namespace yourvrexperience.VR
         }
 #endif        
 
-#if ENABLE_SPEECH
         private void OnSystemEvent(string nameEvent, object[] parameters)
         {
+#if ENABLE_SPEECH            
             if (nameEvent.Equals(SpeechRecognitionController.EventTextToSpeechControllerTimeoutProcessing))
             {
                 btnRecordVoice.gameObject.SetActive(true);
@@ -144,8 +144,8 @@ namespace yourvrexperience.VR
                     }
                 }
             }
+#endif                    
         }
-#endif        
 
         private void OnUIEvent(string nameEvent, params object[] parameters)
 		{
