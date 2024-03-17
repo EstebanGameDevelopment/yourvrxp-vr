@@ -58,6 +58,7 @@ namespace yourvrexperience.VR
 
 		[SerializeField] private Vector3 Offset = new Vector3(0, 3, 5);
         [SerializeField] private float Speed = 20;
+        [SerializeField] private bool EnableCameraSwitch = false;
 
         protected ICameraPlayer _player;
         protected Camera _gameCamera;
@@ -427,6 +428,7 @@ namespace yourvrexperience.VR
         protected virtual void Update()
         {
             if ((_player == null) || (_inputControls == null)) return;
+            if (!EnableCameraSwitch) return;
 
             switch ((CameraStates)_state)
             {
