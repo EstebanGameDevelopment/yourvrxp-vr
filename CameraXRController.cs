@@ -133,7 +133,7 @@ namespace yourvrexperience.VR
 
 		private bool _instantiated = false;
 
-        void Awake()
+        public void Initialize()
         {
 #if ENABLE_OCULUS 
 			if ((GameObject.FindObjectOfType<OVRCameraRig>() == null) && (CameraOculus != null))
