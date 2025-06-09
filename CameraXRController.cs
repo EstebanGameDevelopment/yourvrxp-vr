@@ -135,8 +135,8 @@ namespace yourvrexperience.VR
 
         public void Initialize()
         {
-#if ENABLE_OCULUS 
-			if ((GameObject.FindObjectOfType<OVRCameraRig>() == null) && (CameraOculus != null))
+#if ENABLE_OCULUS
+			if ((GameObject.FindFirstObjectByType<OVRCameraRig>() == null) && (CameraOculus != null))
 			{
 				if (!_instantiated)
 				{
@@ -150,8 +150,8 @@ namespace yourvrexperience.VR
 					Instantiate(VRInputControllerPrefab);
 				}
 			}
-#elif ENABLE_OPENXR			
-			if ((GameObject.FindObjectOfType<OpenXRController>() == null) && (CameraOpenXR != null))
+#elif ENABLE_OPENXR
+			if ((GameObject.FindFirstObjectByType<OpenXRController>() == null) && (CameraOpenXR != null))
 			{
 				if (!_instantiated)
 				{
@@ -161,8 +161,8 @@ namespace yourvrexperience.VR
 					Instantiate(VRInputControllerPrefab);
 				}
 			}
-#elif ENABLE_ULTIMATEXR						
-			if ((GameObject.FindObjectOfType<UltimateXRController>() == null) && (CameraUltimateXR != null))
+#elif ENABLE_ULTIMATEXR
+			if ((GameObject.FindFirstObjectByType<UltimateXRController>() == null) && (CameraUltimateXR != null))
 			{
 				if (!_instantiated)
 				{
@@ -172,8 +172,8 @@ namespace yourvrexperience.VR
 					Instantiate(VRInputControllerPrefab);
 				}
 			}
-#elif ENABLE_NREAL						
-			if ((GameObject.FindObjectOfType<NRHMDPoseTracker>() == null) && (NRealCameraXR != null))
+#elif ENABLE_NREAL
+			if ((GameObject.FindFirstObjectByType<NRHMDPoseTracker>() == null) && (NRealCameraXR != null))
 			{
 				if (!_instantiated)
 				{
@@ -185,7 +185,7 @@ namespace yourvrexperience.VR
 				}
 			}
 #else
-			if ((GameObject.FindObjectOfType<Camera>() == null) && (CameraDesktop != null))
+            if ((GameObject.FindFirstObjectByType<Camera>() == null) && (CameraDesktop != null))
 			{
 				if (!_instantiated)
 				{
@@ -200,7 +200,7 @@ namespace yourvrexperience.VR
 				if (!_instantiated)
 				{
 					_instantiated = true;
-					_cameraDesktop = GameObject.FindObjectOfType<Camera>().gameObject;
+					_cameraDesktop = GameObject.FindFirstObjectByType<Camera>().gameObject;
 					_eventSystemDesktop = Instantiate(EventSystemDesktop) as GameObject;
 					Instantiate(DesktopInputControllerPrefab);
 				}

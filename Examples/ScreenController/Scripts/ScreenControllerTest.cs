@@ -18,10 +18,12 @@ namespace yourvrexperience.VR
 		private StatesApp _state;
 		private IInputController _inputController;
 		
-		void Awake()
+		void Start()
 		{
 			UIEventController.Instance.Event += OnUIEvent;
 			SystemEventController.Instance.Event += OnSystemEvent;
+
+			CameraXRController.Instance.Initialize();
 		}
 
 		void OnDestroy()
