@@ -317,8 +317,8 @@ namespace yourvrexperience.VR
             if (nameEvent.Equals(FingerInteractionRadius.EventSphereInteractionRadiusInited))
             {
                 GameObject targetFinger = (GameObject)parameters[0];
-                if ((Utilities.FindGameObjectInChilds(_leftController, targetFinger))
-                    || (Utilities.FindGameObjectInChilds(_rightController, targetFinger)))
+                if ((yourvrexperience.Utils.Utilities.FindGameObjectInChilds(_leftController, targetFinger))
+                    || (yourvrexperience.Utils.Utilities.FindGameObjectInChilds(_rightController, targetFinger)))
                 {   
                     if (_fingersInteractionController.Count < 2)
                     {

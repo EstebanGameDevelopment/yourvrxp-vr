@@ -181,7 +181,7 @@ namespace yourvrexperience.VR
 						{
 							string data = _inputDescriptionObject.text;
 							_textHistory.Add(data);
-							_inputDescriptionObject.text = Utilities.ReplaceTextPosition(data, _startPosition, _endPosition, newText);
+							_inputDescriptionObject.text = yourvrexperience.Utils.Utilities.ReplaceTextPosition(data, _startPosition, _endPosition, newText);
 							ResetCaretAndBufferPositions();
 						}					
 					}
@@ -194,7 +194,7 @@ namespace yourvrexperience.VR
 					if (_memoryBuffer.Length > 0)
 					{
 						_textHistory.Add(_inputDescriptionObject.text);
-						_inputDescriptionObject.text = Utilities.ReplaceTextPosition(_inputDescriptionObject.text, _startPosition, _endPosition, "");
+						_inputDescriptionObject.text = yourvrexperience.Utils.Utilities.ReplaceTextPosition(_inputDescriptionObject.text, _startPosition, _endPosition, "");
 					}
 					ResetCaretAndBufferPositions(false);
 				}
@@ -209,7 +209,7 @@ namespace yourvrexperience.VR
 					if (_memoryBuffer.Length > 0)
 					{
 						_textHistory.Add(_inputDescriptionObject.text);
-						_inputDescriptionObject.text = Utilities.ReplaceTextPosition(_inputDescriptionObject.text, _inputDescriptionObject.caretPosition, _inputDescriptionObject.caretPosition, _memoryBuffer);
+						_inputDescriptionObject.text = yourvrexperience.Utils.Utilities.ReplaceTextPosition(_inputDescriptionObject.text, _inputDescriptionObject.caretPosition, _inputDescriptionObject.caretPosition, _memoryBuffer);
 					}
 					ResetCaretAndBufferPositions();
 				}
@@ -218,7 +218,7 @@ namespace yourvrexperience.VR
 					if ((_startPosition != -1) && (_endPosition != -1))
 					{
 						_textHistory.Add(_inputDescriptionObject.text);
-						_inputDescriptionObject.text = Utilities.ReplaceTextPosition(_inputDescriptionObject.text, _inputDescriptionObject.caretPosition, _inputDescriptionObject.caretPosition, "\n");	
+						_inputDescriptionObject.text = yourvrexperience.Utils.Utilities.ReplaceTextPosition(_inputDescriptionObject.text, _inputDescriptionObject.caretPosition, _inputDescriptionObject.caretPosition, "\n");	
 					}
 					ResetCaretAndBufferPositions(false);
 				}
@@ -245,7 +245,7 @@ namespace yourvrexperience.VR
 					{
 						string data = _inputDescriptionObject.text;
 						_textHistory.Add(data);
-						data = Utilities.ReplaceTextPosition(data, _inputDescriptionObject.caretPosition - 1, _inputDescriptionObject.caretPosition, "");
+						data = yourvrexperience.Utils.Utilities.ReplaceTextPosition(data, _inputDescriptionObject.caretPosition - 1, _inputDescriptionObject.caretPosition, "");
 						_inputDescriptionObject.caretPosition--;
 						_inputDescriptionObject.text = data;	
 					}
@@ -256,7 +256,7 @@ namespace yourvrexperience.VR
 					{
 						string data = _inputDescriptionObject.text;
 						_textHistory.Add(data);
-						data = Utilities.ReplaceTextPosition(_inputDescriptionObject.text, _inputDescriptionObject.caretPosition, _inputDescriptionObject.caretPosition, " ");
+						data = yourvrexperience.Utils.Utilities.ReplaceTextPosition(_inputDescriptionObject.text, _inputDescriptionObject.caretPosition, _inputDescriptionObject.caretPosition, " ");
 						_inputDescriptionObject.text = data;	
 					}
 				}

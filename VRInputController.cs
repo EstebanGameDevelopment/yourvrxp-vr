@@ -1023,7 +1023,7 @@ namespace yourvrexperience.VR
 					centerLevel = new Vector3(_centerLevel.x, PositionCamera.y, _centerLevel.x);
 				}
 				Vector2 scaledPositionWorld = new Vector2(positionWorld.x * ScaleMovementXZ, positionWorld.z * ScaleMovementXZ);
-				Vector3 posRotatedWorld = Utilities.RotatePoint(scaledPositionWorld, Vector2.zero, -_currentLocalCameraRotation.y);
+				Vector3 posRotatedWorld = yourvrexperience.Utils.Utilities.RotatePoint(scaledPositionWorld, Vector2.zero, -_currentLocalCameraRotation.y);
 				Vector3 nextPosition = centerLevel 
 									+ new Vector3(posRotatedWorld.x, 0, posRotatedWorld.y) 
 									+ _shiftCameraFromOrigin
@@ -1041,7 +1041,7 @@ namespace yourvrexperience.VR
 					centerLevel = new Vector3(_centerLevel.x, PositionCamera.y, _centerLevel.x);
 				}
 				Vector3 scaledPositionWorld = new Vector2(positionWorld.x * ScaleMovementXZ, positionWorld.z * ScaleMovementXZ);
-				Vector3 posRotatedWorld = Utilities.RotatePoint(scaledPositionWorld, Vector2.zero, -_currentLocalCameraRotation.y);
+				Vector3 posRotatedWorld = yourvrexperience.Utils.Utilities.RotatePoint(scaledPositionWorld, Vector2.zero, -_currentLocalCameraRotation.y);
 				Vector3 nextPosition = centerLevel + new Vector3(posRotatedWorld.x, 0, posRotatedWorld.y) + _shiftCameraFromOrigin;
 				PositionCamera = nextPosition;
 				float finalVerticalCameraShift = VerticalCameraShift;

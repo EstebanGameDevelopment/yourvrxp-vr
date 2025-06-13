@@ -254,7 +254,7 @@ namespace yourvrexperience.VR
             _markerDestination.transform.position = positions1[positions1.Count - 1];
 			if (IsDirectional)
 			{
-				Vector3 eulerDirection = new Vector3(0, 180 - Utilities.GetAngleFromNormal(_joystickTeleport), 0);
+				Vector3 eulerDirection = new Vector3(0, 180 - yourvrexperience.Utils.Utilities.GetAngleFromNormal(_joystickTeleport), 0);
 				Vector3 eulerBase = new Vector3(0, _forwardDirection.transform.rotation.eulerAngles.y, 0);
 				_finalRotation = Quaternion.Euler(eulerBase) * Quaternion.Inverse(Quaternion.Euler(eulerDirection)); 
 				_markerDestination.transform.rotation = _finalRotation;
