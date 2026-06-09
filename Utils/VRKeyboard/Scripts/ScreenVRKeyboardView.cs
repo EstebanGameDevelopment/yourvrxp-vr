@@ -19,6 +19,7 @@ namespace yourvrexperience.VR
 
         public const string EventScreenVRKeyboardSetNewText = "EventScreenVRKeyboardSetNewText";
         public const string EventScreenVRKeyboardConfirmInput = "EventScreenVRKeyboardConfirmInput";
+        public const string EventScreenVRKeyboardSpeechRecognized = "EventScreenVRKeyboardSpeechRecognized";
 
         [SerializeField] private GameObject contentKeyboard;
         [SerializeField] private Button btnRecordVoice;
@@ -103,7 +104,7 @@ namespace yourvrexperience.VR
             contentProcessing.gameObject.SetActive(true);
             _timeToRecord = -1;
             textProcessing.text = LanguageController.Instance.GetText("vr.keyboard.now.processing");
-            SpeechRecognitionController.Instance.ProcessSpeech(this.gameObject);
+            SpeechRecognitionController.Instance.ProcessSpeech(EventScreenVRKeyboardSpeechRecognized);
         }
 
         private void OnRecordMessage()
@@ -126,7 +127,7 @@ namespace yourvrexperience.VR
                 contentProcessing.gameObject.SetActive(false);
                 contentKeyboard.SetActive(true);
             }
-            if (nameEvent.Equals(SpeechRecognitionController.EventSpeechRecognitionControllerCompleted))
+            if (nameEvent.Equals(EventScreenVRKeyboardSpeechRecognized))
             {
                 bool isOk = (bool)parameters[0];
                 string resultText = (string)parameters[1];
