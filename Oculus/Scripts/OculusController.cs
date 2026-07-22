@@ -1,6 +1,5 @@
 #if ENABLE_OCULUS
 using Oculus.Interaction;
-using OculusSampleFramework;
 #endif
 using System;
 using System.Collections;
@@ -92,7 +91,7 @@ namespace yourvrexperience.VR
 		public GameObject HandRightController
 		{
 			get { 
-				if ((OculusHandsManager.Instance != null) && OculusHandsManager.Instance.HandsBeingTracked && (HandsManager.Instance != null))
+				if ((OculusHandsManager.Instance != null) && OculusHandsManager.Instance.HandsBeingTracked)
 				{
 					return OculusHandsManager.Instance.RightHandContainer;
 				}

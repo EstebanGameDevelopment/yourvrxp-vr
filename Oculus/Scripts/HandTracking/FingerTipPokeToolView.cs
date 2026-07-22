@@ -1,6 +1,5 @@
 #if ENABLE_OCULUS
 using Oculus.Interaction;
-using OculusSampleFramework;
 #endif
 using System.Collections;
 using System.Collections.Generic;
@@ -10,13 +9,11 @@ using UnityEngine.Assertions;
 namespace yourvrexperience.VR
 {
 	public class FingerTipPokeToolView : MonoBehaviour
-#if ENABLE_OCULUS	
-	, InteractableToolView
-#endif	
 	{
 		[SerializeField] private MeshRenderer _sphereMeshRenderer = null;
 
 #if ENABLE_OCULUS	
+/*
 		public InteractableTool InteractableTool { get; set; }
 
 		public bool EnableState
@@ -54,6 +51,7 @@ namespace yourvrexperience.VR
 		{
 			// nothing to see here
 		}
+		*/
 #endif
 	}
 }

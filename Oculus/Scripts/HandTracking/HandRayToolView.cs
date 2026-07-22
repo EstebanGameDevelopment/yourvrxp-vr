@@ -1,6 +1,5 @@
 #if ENABLE_OCULUS
 using Oculus.Interaction;
-using OculusSampleFramework;
 #endif
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -11,9 +10,11 @@ namespace yourvrexperience.VR
 	/// Visual portion of ray tool.
 	/// </summary>
 	public class HandRayToolView : MonoBehaviour
+	/*
 #if ENABLE_OCULUS
 		, InteractableToolView
 #endif
+*/
 	{
 		private const int NUM_RAY_LINE_POSITIONS = 25;
 		private const float DEFAULT_RAY_CAST_DISTANCE = 3.0f;
@@ -82,10 +83,11 @@ namespace yourvrexperience.VR
 			);
 		}
 
-		public InteractableTool InteractableTool { get; set; }
+		// public InteractableTool InteractableTool { get; set; }
 
 		private void Update()
 		{
+			/*
 			if (OculusHandsManager.Instance.EnableVisualRays)
             {
 				var myPosition = InteractableTool.ToolTransform.position;
@@ -105,6 +107,7 @@ namespace yourvrexperience.VR
             {
 				_referenceRay.gameObject.SetActive(false);
 			}
+			*/
 		}
 
 		public static Vector3 GetPointOnBezierCurve(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
@@ -116,11 +119,6 @@ namespace yourvrexperience.VR
 			return oneMinusT * oneMinusTSqr * p0 + 3f * oneMinusTSqr * t * p1 + 3f * oneMinusT * tSqr * p2 +
 				t * tSqr * p3;
 		}
-
-        public void SetFocusedInteractable(OculusSampleFramework.Interactable interactable)
-        {
-            throw new System.NotImplementedException();
-        }
 #endif
 	}
 }

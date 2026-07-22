@@ -1,5 +1,4 @@
 #if ENABLE_AVATAR_OCULUS
-using OculusSampleFramework;
 using Oculus.Avatar2;
 using yourvrexperience.Networking;
 #endif

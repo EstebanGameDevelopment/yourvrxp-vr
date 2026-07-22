@@ -1,17 +1,9 @@
-#if ENABLE_OCULUS
-using Oculus.Interaction;
-using OculusSampleFramework;
-#endif
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace yourvrexperience.VR
 {
-	/// <summary>
-	/// Spawns all interactable tools that are specified for a scene.
-	/// </summary>
 	public class InteractableOculusHandsCreator : MonoBehaviour
 	{
 		public const string EventInteractableOculusHandsCreatorStarted = "EventInteractableOculusHandsCreatorStarted";
@@ -38,7 +30,7 @@ namespace yourvrexperience.VR
 			CameraRig = OculusController.Instance.transform;
 
 			if (!_initedGeneral)
-            {
+			{
 				_initedGeneral = true;
 				VRInputController.Instance.Event += OnVREvent;
 			}
@@ -57,34 +49,31 @@ namespace yourvrexperience.VR
 		}
 
 		void OnDestroy()
-        {
+		{
 			if (VRInputController.Instance != null) VRInputController.Instance.Event -= OnVREvent;
 		}
 
-        private IEnumerator AttachToolsToHands(Transform[] toolObjects, bool isRightHand)
+		private IEnumerator AttachToolsToHands(Transform[] toolObjects, bool isRightHand)
 		{
-			HandsManager handsManagerObj = null;
-			while ((handsManagerObj = HandsManager.Instance) == null || !handsManagerObj.IsInitialized())
+			// Replaces the old wait on HandsManager.IsInitialized() + skeleton bones.
+			// The tools no longer attach to bone capsules, so we only need the relevant
+			// OVRHand to be resolved and available on OculusHandsManager before we
+			// instantiate and initialize them.
+			while (OculusHandsManager.Instance == null
+				|| (isRightHand ? OculusHandsManager.Instance.RightHand : OculusHandsManager.Instance.LeftHand) == null)
 			{
 				yield return null;
 			}
 
-			// create set of tools per hand to be safe
+			// De-dupe the tool list (was a HashSet in the original).
 			HashSet<Transform> toolObjectSet = new HashSet<Transform>();
 			foreach (Transform toolTransform in toolObjects)
 			{
-				toolObjectSet.Add(toolTransform.transform);
+				if (toolTransform != null) toolObjectSet.Add(toolTransform);
 			}
 
 			foreach (Transform toolObject in toolObjectSet)
 			{
-				OVRSkeleton handSkeletonToAttachTo =
-				  isRightHand ? handsManagerObj.RightHandSkeleton : handsManagerObj.LeftHandSkeleton;
-				while (handSkeletonToAttachTo == null || handSkeletonToAttachTo.Bones == null)
-				{
-					yield return null;
-				}
-
 				AttachToolToHandTransform(toolObject, isRightHand);
 			}
 		}
@@ -92,9 +81,9 @@ namespace yourvrexperience.VR
 		private void OnVREvent(string nameEvent, object[] parameters)
 		{
 			if (nameEvent.Equals(OculusHandsManager.EventOculusHandsManagerRotationCameraApplied))
-            {
+			{
 				bool shouldSet = (bool)parameters[0];
-                Vector3 rotationApplied = (Vector3)parameters[1];
+				Vector3 rotationApplied = (Vector3)parameters[1];
 				if (shouldSet)
 				{
 					_rotationAcumulated = rotationApplied;
@@ -104,7 +93,7 @@ namespace yourvrexperience.VR
 					_rotationAcumulated += rotationApplied;
 				}
 				foreach (Transform tool in m_toolInstances)
-                {
+				{
 					if (shouldSet)
 					{
 						tool.rotation = Quaternion.identity;
@@ -119,14 +108,24 @@ namespace yourvrexperience.VR
 			var newTool = Instantiate(tool).transform;
 			newTool.SetParent(CameraRig, false);
 			newTool.localPosition = Vector3.zero;
+
 			PinchInteractionTool toolComp = newTool.GetComponent<PinchInteractionTool>();
-			toolComp.IsRightHandedTool = isRightHanded;
-			// Initialize only AFTER settings have been applied!
-			toolComp.Initialize();
-			toolComp.RotationAcumulated = _rotationAcumulated;
-			newTool.GetComponentInChildren<FingerInteractionRadius>().Hand = (isRightHanded ? XR_HAND.right : XR_HAND.left);
+			if (toolComp != null)
+			{
+				// Set handedness BEFORE Initialize() so the tool resolves the correct
+				// OVRHand from OculusHandsManager by handedness.
+				toolComp.IsRightHandedTool = isRightHanded;
+				toolComp.Initialize();
+				toolComp.RotationAcumulated = _rotationAcumulated;
+			}
+
+			FingerInteractionRadius fingerRadius = newTool.GetComponentInChildren<FingerInteractionRadius>();
+			if (fingerRadius != null)
+			{
+				fingerRadius.Hand = (isRightHanded ? XR_HAND.right : XR_HAND.left);
+			}
+
 			m_toolInstances.Add(newTool);
-			// Debug.LogError("HANDS FULLY INITIALIZED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		}
 #endif
 	}

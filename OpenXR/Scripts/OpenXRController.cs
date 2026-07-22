@@ -51,8 +51,8 @@ namespace yourvrexperience.VR
 		public bool _rThumbstickButtonState = false, _lThumbstickButtonState = false;
 		public bool _rThumbstickButtonPrevState = false, _lThumbstickButtonPrevState = false;
 
-		private XRInteractorLineVisual _leftLineVisual;
-		private XRInteractorLineVisual _rightLineVisual;
+		private UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals.XRInteractorLineVisual _leftLineVisual;
+		private UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals.XRInteractorLineVisual _rightLineVisual;
 
 		private Camera _mainCamera;
 		private XRUIInputModule[] _eventSystemOpenXR;
@@ -160,8 +160,8 @@ namespace yourvrexperience.VR
 			_originLineRight = _raycastLineRight.GetPosition(0);
 			_targetLineRight = _raycastLineRight.GetPosition(1);
 
-			_leftLineVisual = OpenXRLeftController.GetComponentInChildren<XRInteractorLineVisual>();
-			_rightLineVisual = OpenXRRightController.GetComponentInChildren<XRInteractorLineVisual>();
+			_leftLineVisual = OpenXRLeftController.GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals.XRInteractorLineVisual>();
+			_rightLineVisual = OpenXRRightController.GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals.XRInteractorLineVisual>();
 
 			SetLaserToRightHand();
 			

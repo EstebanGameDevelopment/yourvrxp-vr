@@ -1,6 +1,5 @@
 #if ENABLE_OCULUS
 using Oculus.Interaction;
-using OculusSampleFramework;
 #endif
 using System;
 using System.Collections;
@@ -12,11 +11,15 @@ using UnityEngine.Assertions;
 
 namespace yourvrexperience.VR
 {
-#if ENABLE_OCULUS		
-	[RequireComponent(typeof(HandsManager))]
-#endif	
-    public class OculusHandsManager : MonoBehaviour
-    {
+	// [RequireComponent(typeof(HandsManager))] REMOVED.
+	// The deprecated OculusSampleFramework.HandsManager was only caching OVRHand +
+	// mesh-renderer references off the hand GameObjects. Those references are now
+	// resolved directly from the GameObjects passed into Initialize() (see
+	// ResolveHandComponents), so the sample-framework component is no longer needed.
+	// Note: the OVRHandPrefab renders itself via its own OVRHand / OVRSkeleton /
+	// OVRMeshRenderer components, so removing HandsManager does NOT break hand visuals.
+	public class OculusHandsManager : MonoBehaviour
+	{
 		public const bool DEBUG_FINGERS = false;
 
 		public const string EventOculusHandsManagerStateInited = "EventOculusHandsManagerStateInited";
@@ -24,9 +27,19 @@ namespace yourvrexperience.VR
 		public const string EventOculusHandsManagerRotationCameraApplied = "EventOculusHandsManagerRotationCameraApplied";
 		public const string EventOculusHandsManagerSetUpLaserPointerInitialize = "EventOculusHandsManagerSetUpLaserPointerInitialize";
 
-#if ENABLE_OCULUS
-		private const string SKELETON_VISUALIZER_NAME = "SkeletonRenderer";
+		// --- Relocated from the now-deleted PinchInteractionTool -----------------------
+		// Your event bus is string-keyed, so the coupling is the string VALUE, not the
+		// symbol. Whatever new component drives the ray (an Interaction SDK adapter) must
+		// dispatch these SAME string values for existing wiring to keep matching.
+		// VERIFY these values are identical to the originals on PinchInteractionTool
+		// before shipping — if they differ, listeners will silently stop firing.
+		public const string EventPinchInteractionToolRequestRay = "EventPinchInteractionToolRequestRay";
+		public const string EventPinchInteractionToolResponseRay = "EventPinchInteractionToolResponseRay";
+		public const string EventPinchInteractionToolPinchPressed = "EventPinchInteractionToolPinchPressed";
+		public const string EventPinchInteractionToolPinchReleased = "EventPinchInteractionToolPinchReleased";
+		// -------------------------------------------------------------------------------
 
+#if ENABLE_OCULUS
 		[SerializeField] private float InteractionFingerSize = 0.1f;
 
 		private bool _handsBeingTracked = false;
@@ -34,14 +47,22 @@ namespace yourvrexperience.VR
 		private List<GameObject> _fingersInteractionHand = new List<GameObject>();
 		private List<GameObject> _fingersInteractionController = new List<GameObject>();
 
-        protected XR_HAND _currentHandWithLaser = XR_HAND.none;
+		protected XR_HAND _currentHandWithLaser = XR_HAND.none;
 
 		private GameObject _leftController = null;
 		private GameObject _rightController = null;
 		private Transform _referenceToRay = null;
 
 		private InteractableOculusHandsCreator _interactableOculusHandsCreator;
-		private HandsManager _handsManager;
+
+		// Replaces the OculusSampleFramework.HandsManager references.
+		private GameObject _leftHandGO;
+		private GameObject _rightHandGO;
+		private OVRHand _leftHand;
+		private OVRHand _rightHand;
+		private SkinnedMeshRenderer _leftMeshRenderer;
+		private SkinnedMeshRenderer _rightMeshRenderer;
+
 		private GameObject _leftHandContainer;
 		private GameObject _rightHandContainer;
 		private OVRInputModule _ovrInputModule;
@@ -49,14 +70,22 @@ namespace yourvrexperience.VR
 		TeleportController _teleportRight;
 		TeleportController _teleportLeft;
 
+		public OVRHand LeftHand
+		{
+			get { return _leftHand; }
+		}
+		public OVRHand RightHand
+		{
+			get { return _rightHand; }
+		}
 		public bool HandsBeingTracked
 		{
 			get { return _handsBeingTracked; }
 		}
-        public XR_HAND CurrentHandWithLaser
-        {
-            get { return _currentHandWithLaser; }
-        }
+		public XR_HAND CurrentHandWithLaser
+		{
+			get { return _currentHandWithLaser; }
+		}
 		public bool EnableVisualRays
 		{
 			get { return _enableVisualRays; }
@@ -67,15 +96,15 @@ namespace yourvrexperience.VR
 		}
 		public GameObject LeftHandContainer
 		{
-			get { 
+			get {
 				if (_leftHandContainer == null)
 				{
 					_leftHandContainer = new GameObject();
 					_leftHandContainer.name = "CONTAINER_LEFT_HAND";
 				}
-				if ((_leftHandContainer.transform.parent == null) && (HandsManager.Instance != null))
+				if ((_leftHandContainer.transform.parent == null) && (_leftHandGO != null))
 				{
-					_leftHandContainer.transform.parent = HandsManager.Instance.LeftHandGO.transform;
+					_leftHandContainer.transform.parent = _leftHandGO.transform;
 					_leftHandContainer.transform.localPosition = new Vector3(0.1f, 0.05f, 0);
 					_leftHandContainer.transform.localRotation = Quaternion.identity;
 					_leftHandContainer.transform.Rotate(new Vector3(0, 90, 90));
@@ -85,15 +114,15 @@ namespace yourvrexperience.VR
 		}
 		public GameObject RightHandContainer
 		{
-			get { 
+			get {
 				if (_rightHandContainer == null)
 				{
 					_rightHandContainer = new GameObject();
 					_rightHandContainer.name = "CONTAINER_RIGHT_HAND";
 				}
-				if ((_rightHandContainer.transform.parent == null) && (HandsManager.Instance != null))
+				if ((_rightHandContainer.transform.parent == null) && (_rightHandGO != null))
 				{
-					_rightHandContainer.transform.parent = HandsManager.Instance.RightHandGO.transform;
+					_rightHandContainer.transform.parent = _rightHandGO.transform;
 					_rightHandContainer.transform.localPosition = new Vector3(-0.1f, -0.02f, 0);
 					_rightHandContainer.transform.localRotation = Quaternion.identity;
 					_rightHandContainer.transform.Rotate(new Vector3(0, -90, 90));
@@ -105,9 +134,9 @@ namespace yourvrexperience.VR
 		{
 			get {
 					if (_ovrInputModule == null)
-                    {
-                        _ovrInputModule = GameObject.FindObjectOfType<OVRInputModule>();
-                    }
+					{
+						_ovrInputModule = GameObject.FindObjectOfType<OVRInputModule>();
+					}
 					return _ovrInputModule;
 			}
 		}
@@ -123,17 +152,44 @@ namespace yourvrexperience.VR
 			}
 			Instance = this;
 
-			_handsManager = this.GetComponent<HandsManager>();
-			_handsManager.LeftHandGO = leftHand;
-			_handsManager.RightHandGO = rightHand;
+			// Previously delegated to HandsManager.Initialize(); now resolved locally.
+			_leftHandGO = leftHand;
+			_rightHandGO = rightHand;
 			_leftController = leftController;
 			_rightController = rightController;
-			_handsManager.Initialize();
+
+			ResolveHandComponents();
 
 			Invoke("ReportStartedHands", 0.1f);
 
 			VRInputController.Instance.Event += OnVREvent;
 			SystemEventController.Instance.Event += OnSystemEvent;
+		}
+
+		// Resolves OVRHand + hand SkinnedMeshRenderer from each hand GameObject.
+		// Works whether the GameObject you pass in is the OVRHandPrefab itself or a
+		// parent container of it (checks self first, then children). Avoids the Unity
+		// null-coalescing (??) gotcha by using explicit null checks.
+		private void ResolveHandComponents()
+		{
+			if (_leftHandGO != null)
+			{
+				_leftHand = _leftHandGO.GetComponent<OVRHand>();
+				if (_leftHand == null) _leftHand = _leftHandGO.GetComponentInChildren<OVRHand>(true);
+				_leftMeshRenderer = _leftHandGO.GetComponentInChildren<SkinnedMeshRenderer>(true);
+			}
+			if (_rightHandGO != null)
+			{
+				_rightHand = _rightHandGO.GetComponent<OVRHand>();
+				if (_rightHand == null) _rightHand = _rightHandGO.GetComponentInChildren<OVRHand>(true);
+				_rightMeshRenderer = _rightHandGO.GetComponentInChildren<SkinnedMeshRenderer>(true);
+			}
+
+			if (_leftHand == null || _rightHand == null)
+			{
+				Debug.LogWarning("[OculusHandsManager] Could not resolve an OVRHand on one or both hand GameObjects. " +
+					"Make sure the object passed to Initialize() is (or contains) an OVRHandPrefab.");
+			}
 		}
 
 		private void ReportStartedHands()
@@ -149,7 +205,7 @@ namespace yourvrexperience.VR
 				if (VRInputController.Instance != null) VRInputController.Instance.Event -= OnVREvent;
 				if (SystemEventController.Instance != null) SystemEventController.Instance.Event -= OnSystemEvent;
 				if (_rightHandContainer != null) GameObject.Destroy(_rightHandContainer);
-				if (_leftHandContainer != null) GameObject.Destroy(_leftHandContainer);				
+				if (_leftHandContainer != null) GameObject.Destroy(_leftHandContainer);
 				OVRHand[] ovrHands = GameObject.FindObjectsOfType<OVRHand>();
 				foreach (OVRHand ovrHand in ovrHands)
 				{
@@ -158,7 +214,7 @@ namespace yourvrexperience.VR
 						if (ovrHand.PointerPose != null)
 						{
 							GameObject.Destroy(ovrHand.PointerPose.gameObject);
-						}						
+						}
 					}
 				}
 				GameObject.Destroy(this.gameObject);
@@ -169,7 +225,7 @@ namespace yourvrexperience.VR
 		{
 			if (_handsBeingTracked)
 			{
-				VRInputController.Instance.DispatchVREvent(PinchInteractionTool.EventPinchInteractionToolRequestRay, OculusController.Instance.HandSelected);
+				VRInputController.Instance.DispatchVREvent(EventPinchInteractionToolRequestRay, OculusController.Instance.HandSelected);
 				VRInputController.Instance.ApplyHandTrackingLocomotion();
 			}
 			else
@@ -186,100 +242,109 @@ namespace yourvrexperience.VR
 				else
 				{
 					OvrInputModule.joyPadClickButton = OVRInput.Button.PrimaryIndexTrigger | OVRInput.Button.SecondaryIndexTrigger;
-				}				
+				}
 			}
 		}
 
 
 		private void CheckHandsBeingTracked()
-        {
-            bool handsTracked = false;
+		{
+			bool handsTracked = false;
 
-            if (_handsManager.LeftHand != null)
-            {
-                if (_handsManager.LeftHand.IsTracked)
-                {
-                    handsTracked = true;
-                }
-            }
+			if (_leftHand != null)
+			{
+				if (_leftHand.IsTracked)
+				{
+					handsTracked = true;
+				}
+			}
 
-            if (_handsManager.RightHand != null)
-            {
-                if (_handsManager.RightHand.IsTracked)
-                {
-                    handsTracked = true;
-                }
-            }
+			if (_rightHand != null)
+			{
+				if (_rightHand.IsTracked)
+				{
+					handsTracked = true;
+				}
+			}
 
-            if (handsTracked != _handsBeingTracked)
-            {
-                bool previousTracking = _handsBeingTracked;
-                _handsBeingTracked = handsTracked;
-	            if (!previousTracking && handsTracked)
-                {
-					VRInputController.Instance.DispatchVREvent(EventOculusHandsManagerStateChanged, true);					
-                }
-                else
-                {
+			if (handsTracked != _handsBeingTracked)
+			{
+				bool previousTracking = _handsBeingTracked;
+				_handsBeingTracked = handsTracked;
+				if (!previousTracking && handsTracked)
+				{
+					VRInputController.Instance.DispatchVREvent(EventOculusHandsManagerStateChanged, true);
+				}
+				else
+				{
 					VRInputController.Instance.DispatchVREvent(EventOculusHandsManagerStateChanged, false);
-                }                
-            }
-        }
+				}
+			}
+		}
 
-        private void RefreshSphereInteractionRadius()
-        {
-            if (!_handsBeingTracked)
-            {
-                foreach (GameObject item in _fingersInteractionController)
-                {
-                    item.GetComponent<FingerInteractionRadius>().SetActive(true);
-                    item.GetComponent<FingerInteractionRadius>().SetDebugMode(DEBUG_FINGERS);
-                    item.GetComponent<FingerInteractionRadius>().SetRadius(InteractionFingerSize);
-                }
-                foreach (GameObject item in _fingersInteractionHand)
-                {
-                    item.GetComponent<FingerInteractionRadius>().SetActive(false);
-                }
-            }
-            else
-            {
-                foreach (GameObject item in _fingersInteractionHand)
-                {
-                    item.GetComponent<FingerInteractionRadius>().SetActive(true);
-                    item.GetComponent<FingerInteractionRadius>().SetDebugMode(DEBUG_FINGERS);
-                    item.GetComponent<FingerInteractionRadius>().SetRadius(InteractionFingerSize);
-                }
-                foreach (GameObject item in _fingersInteractionController)
-                {
-                    item.GetComponent<FingerInteractionRadius>().SetActive(false);
-                }
-            }
-        }
+		private void RefreshSphereInteractionRadius()
+		{
+			if (!_handsBeingTracked)
+			{
+				foreach (GameObject item in _fingersInteractionController)
+				{
+					item.GetComponent<FingerInteractionRadius>().SetActive(true);
+					item.GetComponent<FingerInteractionRadius>().SetDebugMode(DEBUG_FINGERS);
+					item.GetComponent<FingerInteractionRadius>().SetRadius(InteractionFingerSize);
+				}
+				foreach (GameObject item in _fingersInteractionHand)
+				{
+					item.GetComponent<FingerInteractionRadius>().SetActive(false);
+				}
+			}
+			else
+			{
+				foreach (GameObject item in _fingersInteractionHand)
+				{
+					item.GetComponent<FingerInteractionRadius>().SetActive(true);
+					item.GetComponent<FingerInteractionRadius>().SetDebugMode(DEBUG_FINGERS);
+					item.GetComponent<FingerInteractionRadius>().SetRadius(InteractionFingerSize);
+				}
+				foreach (GameObject item in _fingersInteractionController)
+				{
+					item.GetComponent<FingerInteractionRadius>().SetActive(false);
+				}
+			}
+		}
 
 		protected void SwitchControlsHandToControllers(bool handTrackingState)
-        {
+		{
 			if (_interactableOculusHandsCreator == null)
 			{
 				_interactableOculusHandsCreator = GameObject.FindObjectOfType<InteractableOculusHandsCreator>();
 				if (_interactableOculusHandsCreator != null) _interactableOculusHandsCreator.Initialize();
-			} 
+			}
 			ActivateTrackingHands(handTrackingState);
-            RefreshSphereInteractionRadius();
+			RefreshSphereInteractionRadius();
 			VRInputController.Instance.DelayVREvent(EventOculusHandsManagerSetUpLaserPointerInitialize, 0.1f, handTrackingState, XR_HAND.right, _referenceToRay, false);
-        }
+		}
 
-        private void ActivateTrackingHands(bool activation)
-        {
-			_handsManager.RightMeshRenderer.enabled = activation;
-			_handsManager.LeftMeshRenderer.enabled = activation;
+		private void ActivateTrackingHands(bool activation)
+		{
+			if (_rightMeshRenderer != null) _rightMeshRenderer.enabled = activation;
+			if (_leftMeshRenderer != null) _leftMeshRenderer.enabled = activation;
 			_enableVisualRays = activation;
 
-            PinchInteractionTool[] pinchTools = GameObject.FindObjectsOfType<PinchInteractionTool>();
-            foreach (PinchInteractionTool item in pinchTools)
-            {
-				item.GetLineRender.gameObject.SetActive(activation);
-            }
-        }
+			// Previously toggled the LineRenderer on every PinchInteractionTool:
+			//   foreach (var item in FindObjectsOfType<PinchInteractionTool>())
+			//       item.GetLineRender.gameObject.SetActive(activation);
+			// With PinchInteractionTool removed, toggle your Interaction SDK ray visual here.
+			SetRayVisualsActive(activation);
+		}
+
+		// INTEGRATION POINT (replaces PinchInteractionTool line-renderer toggling).
+		// Wire this to your Interaction SDK ray visuals — e.g. enable/disable the
+		// RayInteractor's cursor/line visual (RayInteractorCursorVisual) on each hand.
+		// Left as a no-op so the class compiles immediately after PinchInteractionTool
+		// is deleted; the rest of the tracking flow works without it.
+		private void SetRayVisualsActive(bool activation)
+		{
+		}
 
 		private void OnVREvent(string nameEvent, object[] parameters)
 		{
@@ -298,15 +363,15 @@ namespace yourvrexperience.VR
 					{
 						_teleportLeft = teleporter;
 					}
-				}				
+				}
 			}
 			if (nameEvent.Equals(EventOculusHandsManagerStateChanged) || nameEvent.Equals(EventOculusHandsManagerStateInited))
-            {
-                bool handTrackingState = (bool)parameters[0];
+			{
+				bool handTrackingState = (bool)parameters[0];
 				_currentHandWithLaser = XR_HAND.none;
-                SwitchControlsHandToControllers(handTrackingState);
+				SwitchControlsHandToControllers(handTrackingState);
 				RefreshLocomotionConfiguration();
-            }
+			}
 			if (nameEvent.Equals(VRInputController.EventVRInputControllerEnableLocomotion))
 			{
 				if ((bool)parameters[0])
@@ -314,44 +379,54 @@ namespace yourvrexperience.VR
 					Invoke("RefreshLocomotionConfiguration", 0.1f);
 				}
 			}
-            if (nameEvent.Equals(FingerInteractionRadius.EventSphereInteractionRadiusInited))
-            {
-                GameObject targetFinger = (GameObject)parameters[0];
-                if ((yourvrexperience.Utils.Utilities.FindGameObjectInChilds(_leftController, targetFinger))
-                    || (yourvrexperience.Utils.Utilities.FindGameObjectInChilds(_rightController, targetFinger)))
-                {   
-                    if (_fingersInteractionController.Count < 2)
-                    {
-                        _fingersInteractionController.Add(targetFinger);
-                    }                    
-                }
-                else
-                {
-                    if (_fingersInteractionHand.Count < 2)
-                    {
-                        _fingersInteractionHand.Add(targetFinger);
-                    }
-                }
-                RefreshSphereInteractionRadius();
-            }
-            if (nameEvent.Equals(EventOculusHandsManagerSetUpLaserPointerInitialize))
-            {
-                bool isHandTracking = (bool)parameters[0];
-                _currentHandWithLaser = (XR_HAND)parameters[1];				
+			if (nameEvent.Equals(FingerInteractionRadius.EventSphereInteractionRadiusInited))
+			{
+				GameObject targetFinger = (GameObject)parameters[0];
+				if ((yourvrexperience.Utils.Utilities.FindGameObjectInChilds(_leftController, targetFinger))
+					|| (yourvrexperience.Utils.Utilities.FindGameObjectInChilds(_rightController, targetFinger)))
+				{
+					if (_fingersInteractionController.Count < 2)
+					{
+						_fingersInteractionController.Add(targetFinger);
+					}
+				}
+				else
+				{
+					if (_fingersInteractionHand.Count < 2)
+					{
+						_fingersInteractionHand.Add(targetFinger);
+					}
+				}
+				RefreshSphereInteractionRadius();
+			}
+			if (nameEvent.Equals(EventOculusHandsManagerSetUpLaserPointerInitialize))
+			{
+				bool isHandTracking = (bool)parameters[0];
+				_currentHandWithLaser = (XR_HAND)parameters[1];
 				_referenceToRay = (Transform)parameters[2];
-            }
-			if (nameEvent.Equals(PinchInteractionTool.EventPinchInteractionToolPinchPressed))
+			}
+			// --- Laser-pointer state driven by the ray/pinch source ------------------
+			// These handlers are unchanged. What changed is the DISPATCHER: it used to be
+			// PinchInteractionTool. Now a small Interaction SDK adapter (over RayInteractor
+			// + its pinch/hand selector) must dispatch these same string events, passing
+			// the same parameter layout:
+			//   PinchPressed  -> [0]=XR_HAND, [2]=Transform ray origin
+			//   PinchReleased -> [0]=XR_HAND, [2]=Transform ray origin
+			//   ResponseRay   -> [0]=XR_HAND, [1]=Transform ray origin
+			// Until that adapter exists, _currentHandWithLaser / _referenceToRay stay
+			// at their defaults (no hand-tracking laser).
+			if (nameEvent.Equals(EventPinchInteractionToolPinchPressed))
 			{
 				_currentHandWithLaser = (XR_HAND)parameters[0];
 				_referenceToRay = (Transform)parameters[2];
 				OculusController.Instance.HandSelected = _currentHandWithLaser;
 			}
-			if (nameEvent.Equals(PinchInteractionTool.EventPinchInteractionToolPinchReleased))
+			if (nameEvent.Equals(EventPinchInteractionToolPinchReleased))
 			{
 				XR_HAND targetHand = (XR_HAND)parameters[0];
 				_referenceToRay = (Transform)parameters[2];
 			}
-			if (nameEvent.Equals(PinchInteractionTool.EventPinchInteractionToolResponseRay))
+			if (nameEvent.Equals(EventPinchInteractionToolResponseRay))
 			{
 				_currentHandWithLaser = (XR_HAND)parameters[0];
 				_referenceToRay = (Transform)parameters[1];
@@ -389,14 +464,11 @@ namespace yourvrexperience.VR
 
 		private void Update()
 		{
-			if (_handsManager != null)
+			if ((_leftHandGO != null) && (_rightHandGO != null))
 			{
-				if ((_handsManager.LeftHandGO != null) && (_handsManager.RightHandGO != null))
-				{
-					CheckHandsBeingTracked();
-				}
+				CheckHandsBeingTracked();
 			}
 		}
 #endif
-    }
+	}
 }
