@@ -112,41 +112,38 @@ namespace yourvrexperience.VR
         public GameObject CurrentController
         {
             get {
-				if (_ovrHandsManager != null)
+				if ((_ovrHandsManager != null) && _ovrHandsManager.HandsBeingTracked)
 				{
-					if (_ovrHandsManager.HandsBeingTracked)
+					if (_ovrHandsManager.ReferenceToRay != null)
 					{
-						if (_ovrHandsManager.ReferenceToRay != null)
-						{
-							return _ovrHandsManager.ReferenceToRay.gameObject;
-						}
-						else
-						{
-							return null;
-						}					
+						return _ovrHandsManager.ReferenceToRay.gameObject;
 					}
 					else
 					{
-						if (_raycastLineRight != null)
+						return null;
+					}					
+				}
+				else
+				{
+					if (_raycastLineRight != null)
+					{
+						if (_handSelected == XR_HAND.right)
 						{
-							if (_handSelected == XR_HAND.right)
-							{
-								return _raycastLineRight.gameObject;
-							}
-							else
-							{
-								return _raycastLineLeft.gameObject;
-							}
+							return _raycastLineRight.gameObject;
+						}
+						else
+						{
+							return _raycastLineLeft.gameObject;
 						}
 					}
 				}
 				return null;
-            }
+			}			
         }
         public GameObject OtherController
         {
             get {
-				if (_ovrHandsManager.HandsBeingTracked)
+				if ((_ovrHandsManager != null) && _ovrHandsManager.HandsBeingTracked)
 				{
 					if (_ovrHandsManager.ReferenceToRay != null)
 					{
