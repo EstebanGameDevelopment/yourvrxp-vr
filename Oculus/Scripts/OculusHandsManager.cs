@@ -11,13 +11,6 @@ using UnityEngine.Assertions;
 
 namespace yourvrexperience.VR
 {
-	// [RequireComponent(typeof(HandsManager))] REMOVED.
-	// The deprecated OculusSampleFramework.HandsManager was only caching OVRHand +
-	// mesh-renderer references off the hand GameObjects. Those references are now
-	// resolved directly from the GameObjects passed into Initialize() (see
-	// ResolveHandComponents), so the sample-framework component is no longer needed.
-	// Note: the OVRHandPrefab renders itself via its own OVRHand / OVRSkeleton /
-	// OVRMeshRenderer components, so removing HandsManager does NOT break hand visuals.
 	public class OculusHandsManager : MonoBehaviour
 	{
 		public const bool DEBUG_FINGERS = false;
@@ -27,17 +20,10 @@ namespace yourvrexperience.VR
 		public const string EventOculusHandsManagerRotationCameraApplied = "EventOculusHandsManagerRotationCameraApplied";
 		public const string EventOculusHandsManagerSetUpLaserPointerInitialize = "EventOculusHandsManagerSetUpLaserPointerInitialize";
 
-		// --- Relocated from the now-deleted PinchInteractionTool -----------------------
-		// Your event bus is string-keyed, so the coupling is the string VALUE, not the
-		// symbol. Whatever new component drives the ray (an Interaction SDK adapter) must
-		// dispatch these SAME string values for existing wiring to keep matching.
-		// VERIFY these values are identical to the originals on PinchInteractionTool
-		// before shipping — if they differ, listeners will silently stop firing.
 		public const string EventPinchInteractionToolRequestRay = "EventPinchInteractionToolRequestRay";
 		public const string EventPinchInteractionToolResponseRay = "EventPinchInteractionToolResponseRay";
 		public const string EventPinchInteractionToolPinchPressed = "EventPinchInteractionToolPinchPressed";
 		public const string EventPinchInteractionToolPinchReleased = "EventPinchInteractionToolPinchReleased";
-		// -------------------------------------------------------------------------------
 
 #if ENABLE_OCULUS
 		[SerializeField] private float InteractionFingerSize = 0.1f;
@@ -55,7 +41,6 @@ namespace yourvrexperience.VR
 
 		private InteractableOculusHandsCreator _interactableOculusHandsCreator;
 
-		// Replaces the OculusSampleFramework.HandsManager references.
 		private GameObject _leftHandGO;
 		private GameObject _rightHandGO;
 		private OVRHand _leftHand;
@@ -152,7 +137,6 @@ namespace yourvrexperience.VR
 			}
 			Instance = this;
 
-			// Previously delegated to HandsManager.Initialize(); now resolved locally.
 			_leftHandGO = leftHand;
 			_rightHandGO = rightHand;
 			_leftController = leftController;
@@ -166,10 +150,6 @@ namespace yourvrexperience.VR
 			SystemEventController.Instance.Event += OnSystemEvent;
 		}
 
-		// Resolves OVRHand + hand SkinnedMeshRenderer from each hand GameObject.
-		// Works whether the GameObject you pass in is the OVRHandPrefab itself or a
-		// parent container of it (checks self first, then children). Avoids the Unity
-		// null-coalescing (??) gotcha by using explicit null checks.
 		private void ResolveHandComponents()
 		{
 			if (_leftHandGO != null)
@@ -330,18 +310,9 @@ namespace yourvrexperience.VR
 			if (_leftMeshRenderer != null) _leftMeshRenderer.enabled = activation;
 			_enableVisualRays = activation;
 
-			// Previously toggled the LineRenderer on every PinchInteractionTool:
-			//   foreach (var item in FindObjectsOfType<PinchInteractionTool>())
-			//       item.GetLineRender.gameObject.SetActive(activation);
-			// With PinchInteractionTool removed, toggle your Interaction SDK ray visual here.
 			SetRayVisualsActive(activation);
 		}
 
-		// INTEGRATION POINT (replaces PinchInteractionTool line-renderer toggling).
-		// Wire this to your Interaction SDK ray visuals — e.g. enable/disable the
-		// RayInteractor's cursor/line visual (RayInteractorCursorVisual) on each hand.
-		// Left as a no-op so the class compiles immediately after PinchInteractionTool
-		// is deleted; the rest of the tracking flow works without it.
 		private void SetRayVisualsActive(bool activation)
 		{
 		}
@@ -405,16 +376,6 @@ namespace yourvrexperience.VR
 				_currentHandWithLaser = (XR_HAND)parameters[1];
 				_referenceToRay = (Transform)parameters[2];
 			}
-			// --- Laser-pointer state driven by the ray/pinch source ------------------
-			// These handlers are unchanged. What changed is the DISPATCHER: it used to be
-			// PinchInteractionTool. Now a small Interaction SDK adapter (over RayInteractor
-			// + its pinch/hand selector) must dispatch these same string events, passing
-			// the same parameter layout:
-			//   PinchPressed  -> [0]=XR_HAND, [2]=Transform ray origin
-			//   PinchReleased -> [0]=XR_HAND, [2]=Transform ray origin
-			//   ResponseRay   -> [0]=XR_HAND, [1]=Transform ray origin
-			// Until that adapter exists, _currentHandWithLaser / _referenceToRay stay
-			// at their defaults (no hand-tracking laser).
 			if (nameEvent.Equals(EventPinchInteractionToolPinchPressed))
 			{
 				_currentHandWithLaser = (XR_HAND)parameters[0];

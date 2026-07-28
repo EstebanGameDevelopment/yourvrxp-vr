@@ -327,7 +327,6 @@ namespace yourvrexperience.VR
 			{
 				_startPosition = _inputDescriptionObject.caretPosition;
 				_endPosition = _inputDescriptionObject.caretPosition;
-				// Debug.LogError("++++++++++++++++++NATURAL SELECTED::POS="+_startPosition);	
 			}            
         }
 

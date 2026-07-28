@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using yourvrexperience.Utils;
-using IngameDebugConsole;
 #if ENABLE_ULTIMATEXR
 using UltimateXR.Core;
 #endif
