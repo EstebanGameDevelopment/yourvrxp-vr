@@ -1,6 +1,6 @@
 using yourvrexperience.Utils;
 using UnityEngine;
-#if ENABLE_OPENXR
+#if ENABLE_NIANTICXR
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.UI;
@@ -8,30 +8,32 @@ using UnityEngine.XR.Interaction.Toolkit.UI;
 
 namespace yourvrexperience.VR
 {
-    public class OpenXRController : MonoBehaviour
-#if ENABLE_OPENXR
+    public class NianticXRController : MonoBehaviour
+#if ENABLE_NIANTICXR
 , IVRController
 #endif
     {
-        private static OpenXRController instance;
+        private static NianticXRController instance;
 
-        public static OpenXRController Instance
+        public static NianticXRController Instance
         {
             get
             {
                 if (!instance)
                 {
-                    instance = GameObject.FindObjectOfType(typeof(OpenXRController)) as OpenXRController;
+                    instance = GameObject.FindObjectOfType(typeof(NianticXRController)) as NianticXRController;
                 }
                 return instance;
             }
         }
 
-        public Camera OpenXRCamera;
+        public Camera NianticXRCamera;
         public GameObject OpenXRLeftController;
         public GameObject OpenXRRightController;
 
-#if ENABLE_OPENXR
+#if ENABLE_NIANTICXR
+		private XRControllerDevices _devices = new XRControllerDevices();
+
         private XR_HAND _handSelected = XR_HAND.none;
         private GameObject _currentController;
 		private GameObject _otherController;
@@ -68,7 +70,7 @@ namespace yourvrexperience.VR
 			get { 
 				if (_mainCamera == null)
 				{
-					_mainCamera = OpenXRCamera.GetComponentInChildren<Camera>();
+					_mainCamera = NianticXRCamera.GetComponentInChildren<Camera>();
 				}
 				return _mainCamera;
 			}
@@ -79,7 +81,7 @@ namespace yourvrexperience.VR
 		}
         public GameObject HeadController
 		{
-			get { return OpenXRCamera.gameObject; }
+			get { return NianticXRCamera.gameObject; }
 		}
         public GameObject HandLeftController
 		{
@@ -151,17 +153,43 @@ namespace yourvrexperience.VR
 
         private void Start()
         {
-			_raycastLineLeft = OpenXRLeftController.GetComponentInChildren<LineRenderer>();
-			_raycastLineRight = OpenXRRightController.GetComponentInChildren<LineRenderer>();
+			_devices.Initialize();
 
-			_originLineLeft = _raycastLineLeft.GetPosition(0);
-			_targetLineLeft = _raycastLineLeft.GetPosition(1);
+			if (OpenXRLeftController!=null) _raycastLineLeft = OpenXRLeftController.GetComponentInChildren<LineRenderer>();
+			if (OpenXRRightController!=null) _raycastLineRight = OpenXRRightController.GetComponentInChildren<LineRenderer>();
+
+			if (_raycastLineLeft!=null) 
+			{
+				if (_raycastLineLeft.positionCount > 0)
+				{
+					_originLineLeft = _raycastLineLeft.GetPosition(0);
+				}
+			}
+			if (_raycastLineLeft!=null)
+			{
+				if (_raycastLineLeft.positionCount > 1)
+				{
+					_targetLineLeft = _raycastLineLeft.GetPosition(1);
+				}
+			} 
 			
-			_originLineRight = _raycastLineRight.GetPosition(0);
-			_targetLineRight = _raycastLineRight.GetPosition(1);
+			if (_raycastLineRight!=null)
+			{
+				if (_raycastLineRight.positionCount > 0)
+				{
+					_originLineRight = _raycastLineRight.GetPosition(0);
+				}
+			}
+			if (_raycastLineRight!=null) 
+			{
+				if (_raycastLineRight.positionCount > 1)
+				{
+					_targetLineRight = _raycastLineRight.GetPosition(1);
+				}
+			}
 
-			_leftLineVisual = OpenXRLeftController.GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals.XRInteractorLineVisual>();
-			_rightLineVisual = OpenXRRightController.GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals.XRInteractorLineVisual>();
+			if (OpenXRLeftController!=null) _leftLineVisual = OpenXRLeftController.GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals.XRInteractorLineVisual>();
+			if (OpenXRRightController!=null) _rightLineVisual = OpenXRRightController.GetComponentInChildren<UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals.XRInteractorLineVisual>();
 
 			SetLaserToRightHand();
 			
@@ -171,6 +199,7 @@ namespace yourvrexperience.VR
 
         void OnDestroy()
         {
+			_devices.Dispose();
 			DestroyXRUIResources();
 			if (SystemEventController.Instance != null) SystemEventController.Instance.Event -= OnSystemEvent;
 			if (VRInputController.Instance != null) VRInputController.Instance.Event -= OnVREvent;
@@ -319,25 +348,25 @@ namespace yourvrexperience.VR
 			}
 		}
 
-		public Vector2 GetVector2Joystick(XR_HAND hand)
-		{
-			Vector2 rAxisJoystick = Vector2.zero, lAxisJoystick = Vector2.zero;
-			switch (hand)
-			{
-				case XR_HAND.right:
-					InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.primary2DAxis, out rAxisJoystick);
-					break;
-				case XR_HAND.left:
-					InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(CommonUsages.primary2DAxis, out lAxisJoystick);
-					break;
-				case XR_HAND.both:
-					InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.primary2DAxis, out rAxisJoystick);
-					InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(CommonUsages.primary2DAxis, out lAxisJoystick);
-					break;
-			}
-			
-			return rAxisJoystick + lAxisJoystick;
-		}
+        public Vector2 GetVector2Joystick(XR_HAND hand)
+        {
+            Vector2 rAxisJoystick = Vector2.zero, lAxisJoystick = Vector2.zero;
+            switch (hand)
+            {
+                case XR_HAND.right:
+                    _devices.TryGetVector2(XR_HAND.right, CommonUsages.primary2DAxis, out rAxisJoystick);
+                    break;
+                case XR_HAND.left:
+                    _devices.TryGetVector2(XR_HAND.left, CommonUsages.primary2DAxis, out lAxisJoystick);
+                    break;
+                case XR_HAND.both:
+                    _devices.TryGetVector2(XR_HAND.right, CommonUsages.primary2DAxis, out rAxisJoystick);
+                    _devices.TryGetVector2(XR_HAND.left, CommonUsages.primary2DAxis, out lAxisJoystick);
+                    break;
+            }
+
+            return rAxisJoystick + lAxisJoystick;
+        }
 
 		public bool GetThumbstickDown(XR_HAND hand)
 		{
@@ -650,121 +679,154 @@ namespace yourvrexperience.VR
 			_rThumbstickButtonUp = false; _lThumbstickButtonUp = false;
 		}
 
+        private bool PollButton(XR_HAND hand,
+                                InputFeatureUsage<bool> usage,
+                                ref bool state,
+                                ref bool prevState,
+                                ref bool down,
+                                ref bool up,
+                                InputFeatureUsage<float>? analogFallback = null)
+        {
+            prevState = state;
+
+            bool value;
+			float axis = 0;
+            if (!_devices.TryGetBool(hand, usage, out value))
+            {
+                if (analogFallback.HasValue)
+                {                    
+                    if (_devices.TryGetFloat(hand, analogFallback.Value, out axis))
+                    {
+                        value = axis > 0.5f;
+                    }
+                }
+            }
+
+            state = value;
+
+            if (prevState != state)
+            {
+                down = state;
+                up = !state;
+            }
+			
+			if (analogFallback.HasValue)
+        	{                   
+				if (_devices.TryGetFloat(hand, analogFallback.Value, out axis))
+				{
+					return axis > 0;
+				}
+			}
+			return true;
+        }
+
         void Update()
         {
-			UpdateHandSideController();
-			
-			_rTriggerButtonPrevState = _rTriggerButtonState;
-			_lTriggerButtonPrevState = _lTriggerButtonState;
+			_devices.Tick();
 
-			_rGripButtonPrevState = _rGripButtonState;
-			_lGripButtonPrevState = _lGripButtonState;
-			
-			_rPrimaryButtonPrevState = _rPrimaryButtonState; 
-			_lPrimaryButtonPrevState = _lPrimaryButtonState;
-			
-			_rSecondaryButtonPrevState = _rSecondaryButtonState;
-			_lSecondaryButtonPrevState = _lSecondaryButtonState;
+            // Trigger
+            if (!PollButton(XR_HAND.right, CommonUsages.triggerButton,
+                       ref _rTriggerButtonState, ref _rTriggerButtonPrevState,
+                       ref _rTriggerButtonDown, ref _rTriggerButtonUp, CommonUsages.trigger))
+			{
+				_rTriggerButtonDown = false;
+				_rTriggerButtonUp = false;
+			}
+            if (!PollButton(XR_HAND.left, CommonUsages.triggerButton,
+                       ref _lTriggerButtonState, ref _lTriggerButtonPrevState,
+                       ref _lTriggerButtonDown, ref _lTriggerButtonUp, CommonUsages.trigger))
+			{
+				_lTriggerButtonDown = false;
+				_lTriggerButtonUp = false;
+			}
 
-			_rThumbstickButtonPrevState = _rThumbstickButtonState;
-			_lThumbstickButtonPrevState = _lThumbstickButtonState;
+            // Grip
+            if (!PollButton(XR_HAND.right, CommonUsages.gripButton,
+                       ref _rGripButtonState, ref _rGripButtonPrevState,
+                       ref _rGripButtonDown, ref _rGripButtonUp, CommonUsages.grip))
+			{
+				_rGripButtonDown = false;
+				_rGripButtonUp = false;
+			}
+			if (!PollButton(XR_HAND.left, CommonUsages.gripButton,
+					   ref _lGripButtonState, ref _lGripButtonPrevState,
+					   ref _lGripButtonDown, ref _lGripButtonUp, CommonUsages.grip))
+			{
+				_lGripButtonDown = false;
+				_lGripButtonUp = false;
+			}
+            if (!PollButton(XR_HAND.left, CommonUsages.gripButton,
+                       ref _lGripButtonState, ref _lGripButtonPrevState,
+                       ref _lGripButtonDown, ref _lGripButtonUp, CommonUsages.grip))
+			{
+				_lGripButtonDown = false;
+				_lGripButtonUp = false;
+			}
 
-			if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.triggerButton, out _rTriggerButtonState))
+            // A (right) / X (left)
+            if (!PollButton(XR_HAND.right, CommonUsages.primaryButton,
+                       ref _rPrimaryButtonState, ref _rPrimaryButtonPrevState,
+                       ref _rPrimaryButtonDown, ref _rPrimaryButtonUp))
 			{
-				if (_rTriggerButtonPrevState != _rTriggerButtonState)
-				{
-					_rTriggerButtonDown = _rTriggerButtonState;
-					_rTriggerButtonUp = !_rTriggerButtonState;
-				}
-				if (_rTriggerButtonState) 
-				{
-					SetLaserToRightHand();
-				}
+				_rPrimaryButtonDown = false;
+				_rPrimaryButtonUp = false;
 			}
-			if (InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(CommonUsages.triggerButton, out _lTriggerButtonState))
+			if (!PollButton(XR_HAND.left, CommonUsages.primaryButton,
+					   ref _lPrimaryButtonState, ref _lPrimaryButtonPrevState,
+					   ref _lPrimaryButtonDown, ref _lPrimaryButtonUp))
 			{
-				if (_lTriggerButtonPrevState != _lTriggerButtonState)
-				{
-					_lTriggerButtonDown = _lTriggerButtonState;
-					_lTriggerButtonUp = !_lTriggerButtonState;
-				}
-				if (_lTriggerButtonState)
-				{
-					SetLaserToLeftHand();
-				}				
+				_lPrimaryButtonDown = false;
+				_lPrimaryButtonUp = false;
 			}
-			if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.gripButton, out _rGripButtonState))
-			{				
-				if (_rGripButtonPrevState != _rGripButtonState)
-				{
-					_rGripButtonDown = _rGripButtonState;
-					_rGripButtonUp = !_rGripButtonState;
-				}
-				if (_rGripButtonState)
-				{
-					SetLaserToRightHand();
-				}
-			}
-			if (InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(CommonUsages.gripButton, out _lGripButtonState))
+            if (!PollButton(XR_HAND.left, CommonUsages.primaryButton,
+                       ref _lPrimaryButtonState, ref _lPrimaryButtonPrevState,
+                       ref _lPrimaryButtonDown, ref _lPrimaryButtonUp))
 			{
-				if (_lGripButtonPrevState != _lGripButtonState)
-				{
-					_lGripButtonDown = _lGripButtonState;
-					_lGripButtonUp = !_lGripButtonState;
-				}
-				if (_lGripButtonState)
-				{
-					SetLaserToLeftHand();
-				}				
+				_lPrimaryButtonDown = false;
+				_lPrimaryButtonUp = false;
 			}
-			if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.primaryButton, out _rPrimaryButtonState))
+
+            // B (right) / Y (left)
+            if (!PollButton(XR_HAND.right, CommonUsages.secondaryButton,
+                       ref _rSecondaryButtonState, ref _rSecondaryButtonPrevState,
+                       ref _rSecondaryButtonDown, ref _rSecondaryButtonUp))
 			{
-				if (_rPrimaryButtonPrevState != _rPrimaryButtonState)
-				{
-					_rPrimaryButtonDown = _rPrimaryButtonState;
-					_rPrimaryButtonUp = !_rPrimaryButtonState;
-				}
+				_rSecondaryButtonDown = false;
+				_rSecondaryButtonUp = false;
 			}
-			if (InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(CommonUsages.primaryButton, out _lPrimaryButtonState))
+            if (!PollButton(XR_HAND.left, CommonUsages.secondaryButton,
+                       ref _lSecondaryButtonState, ref _lSecondaryButtonPrevState,
+                       ref _lSecondaryButtonDown, ref _lSecondaryButtonUp))
 			{
-				if (_lPrimaryButtonPrevState != _lPrimaryButtonState)
-				{
-					_lPrimaryButtonDown = _lPrimaryButtonState;
-					_lPrimaryButtonUp = !_lPrimaryButtonState;
-				}
+				_lSecondaryButtonDown = false;
+				_lSecondaryButtonUp = false;
 			}
-			if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.secondaryButton, out _rSecondaryButtonState))
+
+            // Thumbstick click
+            if (!PollButton(XR_HAND.right, CommonUsages.primary2DAxisClick,
+                       ref _rThumbstickButtonState, ref _rThumbstickButtonPrevState,
+                       ref _rThumbstickButtonDown, ref _rThumbstickButtonUp))
 			{
-				if (_rPrimaryButtonPrevState != _rSecondaryButtonState)
-				{
-					_rPrimaryButtonDown = _rSecondaryButtonState;
-					_rPrimaryButtonUp = !_rSecondaryButtonState;
-				}
+				_rThumbstickButtonDown = false;
+				_rThumbstickButtonUp = false;
 			}
-			if (InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(CommonUsages.secondaryButton, out _lSecondaryButtonState))
+            if (!PollButton(XR_HAND.left, CommonUsages.primary2DAxisClick,
+                       ref _lThumbstickButtonState, ref _lThumbstickButtonPrevState,
+                       ref _lThumbstickButtonDown, ref _lThumbstickButtonUp))
 			{
-				if (_lSecondaryButtonPrevState != _lSecondaryButtonState)
-				{
-					_lSecondaryButtonDown = _lSecondaryButtonState;
-					_lSecondaryButtonUp = !_lSecondaryButtonState;
-				}
+				_lThumbstickButtonDown = false;
+				_lThumbstickButtonUp = false;
 			}
-			if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.primary2DAxisClick, out _rThumbstickButtonState))
-			{
-				if (_rThumbstickButtonPrevState != _rThumbstickButtonState)
-				{
-					_rThumbstickButtonDown = _rThumbstickButtonState;
-					_rThumbstickButtonUp = !_rThumbstickButtonState;
-				}
-			}
-			if (InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).TryGetFeatureValue(CommonUsages.primary2DAxisClick, out _lThumbstickButtonState))
-			{
-				if (_lThumbstickButtonPrevState != _lThumbstickButtonState)
-				{
-					_lThumbstickButtonDown = _lThumbstickButtonState;
-					_lThumbstickButtonUp = !_lThumbstickButtonState;
-				}
-			}
+
+            // Laser side follows the last hand that pressed trigger or grip.
+            if (_rTriggerButtonState || _rGripButtonState)
+            {
+                SetLaserToRightHand();
+            }
+            else if (_lTriggerButtonState || _lGripButtonState)
+            {
+                SetLaserToLeftHand();
+            }
         }
 #endif
 	}
